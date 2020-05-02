@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 
+enum Pages { latest, history }
 
-class NewsController {
+class MyPageController {
+  ValueNotifier<int> pageState = ValueNotifier(Pages.latest.index);
 
-
-}
-
-class MyPageIndexController {
-
+  void pageChange(int pageIndex) {
+    pageState.value = pageIndex;
+  }
 }

@@ -11,10 +11,9 @@ void main() {
   }
 
   group('pageView correctly works', () {
-
     testWidgets('Should see latest page after app is pumped', (WidgetTester tester) async {
-     await givenAppIsPumped(tester);
-     thenShouldBeLatestPage();
+      await givenAppIsPumped(tester);
+      thenShouldBeLatestPage();
     });
 
     testWidgets('Should see history page after swipe', (WidgetTester tester) async {
