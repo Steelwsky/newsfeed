@@ -6,17 +6,13 @@ import 'history_news_page.dart';
 import 'latest_news_page.dart';
 
 class MyPageView extends StatelessWidget {
-  MyPageView({this.pageController});
-
-  final PageController pageController;
-
   @override
   Widget build(BuildContext context) {
     final myPageController = Provider.of<MyPageController>(context);
     return PageView(
-      controller: pageController,
+      controller: myPageController.pageController,
       onPageChanged: (pageIndex) {
-        myPageController.pageChange(pageIndex);
+        myPageController.pageSwipeChange(pageIndex);
       },
       children: <Widget>[LatestNewsPage(), HistoryNewsPage()],
     );
