@@ -1,0 +1,10 @@
+
+
+class NewsController {
+
+
+}
+
+class MyPageIndexController {
+
+}
