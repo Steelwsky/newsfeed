@@ -6,32 +6,41 @@ import 'package:newsfeed/latest_news_page.dart';
 import 'package:newsfeed/main.dart';
 import 'package:provider/provider.dart';
 
+import 'data_appearance_test.dart';
+
+
 void main() {
-  Future<void> givenAppIsPumped(WidgetTester tester) async {
+  Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
     await tester.pumpWidget(Provider<RssDataSourceController>(
       create: (_) => RssDataSourceController(),
-      child: MyApp(),
+      child: MyApp(
+        getRssFromUrl: (String url) => Future.value(myList),
+        myStorage: fakeStorage,
+      ),
     ));
   }
 
   group('Swiping pages correctly works', () {
     testWidgets('Should see latest page after app is pumped', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      FakeStorage fakeStorage = FakeStorage();
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestPage();
     });
 
     testWidgets('Should see history page after swipe', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      FakeStorage fakeStorage = FakeStorage();
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestPage();
       await whenSwipeToRightToChangePage(tester);
-      thenShouldBeHistoryPage();
+      thenShouldBeEmptyHistoryPage();
     });
 
     testWidgets('Swiping back from history page should return to latest page', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      FakeStorage fakeStorage = FakeStorage();
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestPage();
       await whenSwipeToRightToChangePage(tester);
-      thenShouldBeHistoryPage();
+      thenShouldBeEmptyHistoryPage();
       await whenSwipeToLeftToChangePage(tester);
       thenShouldBeLatestPage();
     });
@@ -39,17 +48,19 @@ void main() {
 
   group('Clicking pages via nav bar correctly works', () {
     testWidgets('Should see history page after clicking tab in nav bar', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      FakeStorage fakeStorage = FakeStorage();
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestPage();
       await whenClickToChangePage(tester, Icons.history);
-      thenShouldBeHistoryPage();
+      thenShouldBeEmptyHistoryPage();
     });
 
     testWidgets('Should see latest page after clicking tab in nav bar', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      FakeStorage fakeStorage = FakeStorage();
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestPage();
       await whenClickToChangePage(tester, Icons.history);
-      thenShouldBeHistoryPage();
+      thenShouldBeEmptyHistoryPage();
       await whenClickToChangePage(tester, Icons.home);
       thenShouldBeLatestPage();
     });
@@ -73,10 +84,10 @@ Future whenClickToChangePage(WidgetTester tester, IconData icon) async {
 
 void thenShouldBeLatestPage() {
   expect(find.byKey(ValueKey('latestNewsPage')), findsOneWidget);
-  expect(find.byKey(ValueKey('historyNewsPage')), findsNothing);
+  expect(find.byKey(ValueKey('emptyHistory')), findsNothing);
 }
 
-void thenShouldBeHistoryPage() {
-  expect(find.byKey(ValueKey('historyNewsPage')), findsOneWidget);
+void thenShouldBeEmptyHistoryPage() {
+  expect(find.byKey(ValueKey('emptyHistory')), findsOneWidget);
   expect(find.byKey(ValueKey('latestNewsPage')), findsNothing);
 }

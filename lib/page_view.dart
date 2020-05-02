@@ -4,8 +4,13 @@ import 'package:provider/provider.dart';
 import 'controller/common_news_controller.dart';
 import 'history_news_page.dart';
 import 'latest_news_page.dart';
+import 'main.dart';
 
 class MyPageView extends StatelessWidget {
+  MyPageView({this.myStorage});
+
+  final MyStorageConcept myStorage;
+
   @override
   Widget build(BuildContext context) {
     final myPageController = Provider.of<MyPageController>(context);
@@ -14,7 +19,7 @@ class MyPageView extends StatelessWidget {
       onPageChanged: (pageIndex) {
         myPageController.pageSwipeChange(pageIndex);
       },
-      children: <Widget>[LatestNewsPage(), HistoryNewsPage()],
+      children: <Widget>[LatestNewsPage(), HistoryNewsPage(myStorage: myStorage)],
     );
   }
 }

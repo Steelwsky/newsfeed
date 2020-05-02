@@ -7,48 +7,55 @@ import 'package:newsfeed/strings.dart';
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
+import 'data_appearance_test.dart';
+
 RssFeed myList = RssFeed(items: []);
 
+FakeStorage fakeStorage = FakeStorage();
+
 void main() {
-  Future<void> givenAppIsPumped(WidgetTester tester) async {
+  Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
     await tester.pumpWidget(Provider<RssDataSourceController>(
       create: (_) => RssDataSourceController(),
-      child: MyApp(getRssFromUrl: (String url) => Future.value(myList)),
+      child: MyApp(
+        getRssFromUrl: (String url) => Future.value(myList),
+        myStorage: fakeStorage,
+      ),
     ));
   }
 
   group('Drawer works properly', () {
     testWidgets('Should see drawer icon to open after app is pumped', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeDrawerIconInAppBar();
     });
 
     testWidgets('expect NO drawer opened when app is pumped', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldHaveClosedDrawer();
     });
 
     testWidgets('expect drawer opens via swipe from left corner to center', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       await whenUserSwipesToCallDrawer(tester);
       thenShouldHaveOpenedDrawer();
     });
 
     testWidgets('expect drawer opens via menu button', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       await whenUserSwipesToCallDrawer(tester);
       thenShouldHaveOpenedDrawer();
     });
 
     testWidgets('expect two items in opened drawer', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       await whenUserSwipesToCallDrawer(tester);
       thenShouldHaveOpenedDrawer();
       expect(find.byType(ListTile), findsNWidgets(2));
     });
 
     testWidgets('drawer closes after a tap on one of the items', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       await whenUserSwipesToCallDrawer(tester);
       expect(find.byKey(ValueKey('NY Times')), findsOneWidget);
       await whenUserSelectsSourceInDrawer(tester);
@@ -57,7 +64,7 @@ void main() {
     });
 
     testWidgets('changing news source should change title in AppBar', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       expect(find.text('Latest - CNBC'), findsOneWidget);
       expect(find.text('Latest - NY Times'), findsNothing);
       await whenUserSwipesToCallDrawer(tester);
@@ -69,7 +76,7 @@ void main() {
     });
 
     testWidgets('changing news source should change title in AppBar', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       expect(find.text('Latest - CNBC'), findsOneWidget);
       expect(find.text('Latest - NY Times'), findsNothing);
       await whenUserSwipesToCallDrawer(tester);
@@ -82,7 +89,7 @@ void main() {
 
     testWidgets('expect drawer has still 1 selected and 1 unseleted items after one of them was taped',
         (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+          await givenAppIsPumped(tester, fakeStorage);
       await whenUserSwipesToCallDrawer(tester);
       expect(find.byIcon(Icons.radio_button_unchecked), findsOneWidget);
       expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);

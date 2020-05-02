@@ -1,41 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:newsfeed/strings.dart';
 import 'package:provider/provider.dart';
-import 'package:webfeed/webfeed.dart';
 
 import 'controller/common_news_controller.dart';
+import 'selected_news_page.dart';
 
 class LatestNewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final myNewsController = Provider.of<NewsController>(context);
-    return ValueListenableBuilder<RssFeed>(
-        valueListenable: myNewsController.rssFeedNotifier,
-        builder: (_, rssFeed, __) {
+    return ValueListenableBuilder<PreparedFeed>(
+        valueListenable: myNewsController.preparedRssFeedNotifier,
+        builder: (_, preparedRssFeed, __) {
           return RefreshIndicator(
               key: ValueKey('latestNewsPage'),
               onRefresh: myNewsController.fetchNews,
-              child: rssFeed.items == null
+              child: preparedRssFeed.items == null
                   ? EmptyList()
                   : ListView(
                   key: PageStorageKey('latest'),
-                  children: rssFeed.items
+                  children: preparedRssFeed.items
                       .map(
                         (i) =>
                         ListTile(
-                          key: ValueKey('item${rssFeed.items.indexOf(i)}'),
+                          key: ValueKey('item${preparedRssFeed.items.indexOf(i)}'),
                           title: Text(
-                            i.title,
+                            i.item.title,
                             style: TextStyle(fontSize: 18),
                           ),
                           subtitle: Text(
-                            i.description,
+                            i.item.description,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(fontSize: 16),
                           ),
-                          trailing: Icon(Icons.bookmark_border, size: 24, color: Colors.amber),
-                          onTap: () {},
+                          trailing: Icon(
+                              i.isViewed ? Icons.bookmark : Icons.bookmark_border, size: 24, color: Colors.amber),
+                          onTap: () {
+                            myNewsController.addToHistory(item: i.item, position: preparedRssFeed.items.indexOf(i));
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: i.item)));
+                          },
                         ),
                   )
                       .toList()));

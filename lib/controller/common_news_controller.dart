@@ -93,16 +93,64 @@ class RssDataSourceController {
 }
 
 class NewsController {
-  NewsController({this.getRssFromUrl, this.rssDataSourceController});
+  NewsController({this.getRssFromUrl, this.rssDataSourceController, this.myStorage}) {
+    updateHistoryList();
+  }
 
   final GetRssFromUrl getRssFromUrl;
   final RssDataSourceController rssDataSourceController;
+  final MyStorageConcept myStorage;
 
-  ValueNotifier<RssFeed> rssFeedNotifier = ValueNotifier(RssFeed());
+  ValueNotifier<PreparedFeed> preparedRssFeedNotifier = ValueNotifier(PreparedFeed());
+
+  ValueNotifier<List<RssItem>> historyListNotifier = ValueNotifier([]);
 
   Future<void> fetchNews({String link}) async {
     await getRssFromUrl(link != null ? link : rssDataSourceController.rssDataSourceNotifier.value.link).then((feed) {
-      rssFeedNotifier.value = feed;
+      checkViewedNews(feed);
     });
   }
+
+  void checkViewedNews(RssFeed feed) {
+    final List<MyRssItem> listItem = List<MyRssItem>();
+    final preparedFeed = PreparedFeed(items: listItem);
+    print(preparedFeed.items);
+    for (var i = 0; i < feed.items.length; i++) {
+      preparedFeed.items.add(MyRssItem(item: feed.items[i], isViewed: isNewsInHistory(feed.items[i])));
+    }
+    preparedRssFeedNotifier.value = preparedFeed;
+  }
+
+  bool isNewsInHistory(RssItem item) {
+    return myStorage.checkNewsInHistoryByLink(item.link);
+  }
+
+  void addToHistory({RssItem item, int position}) {
+    if (isNewsInHistory(item) == false) {
+      myStorage.addItemToHistory(item);
+      final list = preparedRssFeedNotifier.value.items;
+      list[position] = MyRssItem(item: list
+          .elementAt(position)
+          .item, isViewed: true);
+      preparedRssFeedNotifier.value = PreparedFeed(items: list);
+      updateHistoryList();
+    }
+  }
+
+  void updateHistoryList() {
+    historyListNotifier.value = myStorage.getAllStorageItems();
+  }
+}
+
+class MyRssItem {
+  MyRssItem({this.item, this.isViewed});
+
+  final RssItem item;
+  final bool isViewed;
+}
+
+class PreparedFeed {
+  PreparedFeed({this.items});
+
+  final List<MyRssItem> items;
 }

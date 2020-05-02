@@ -3,25 +3,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
 import 'package:provider/provider.dart';
+import 'package:webfeed/webfeed.dart';
 
+import 'data_appearance_test.dart';
 import 'page_view_test.dart';
 
+RssFeed myList = RssFeed(items: []);
+
+FakeStorage fakeStorage = FakeStorage();
+
 void main() {
-  Future<void> givenAppIsPumped(WidgetTester tester) async {
+  Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
     await tester.pumpWidget(Provider<RssDataSourceController>(
       create: (_) => RssDataSourceController(),
-      child: MyApp(),
+      child: MyApp(
+        getRssFromUrl: (String url) => Future.value(myList),
+        myStorage: fakeStorage,
+      ),
     ));
   }
 
   group('my PageView correctly works', () {
     testWidgets('Should have LATEST in app bar after app is pumped', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestInAppBar();
     });
 
     testWidgets('Should have HISTORY in app bar after swiping page', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
+      await givenAppIsPumped(tester, fakeStorage);
       thenShouldBeLatestInAppBar();
       await whenSwipeToRightToChangePage(tester);
       thenShouldBeHistoryInAppBar();
