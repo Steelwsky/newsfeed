@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:newsfeed/latest_news_page.dart';
+import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
+import 'package:provider/provider.dart';
+
+import 'page_view_test.dart';
 
 void main() {
   Future<void> givenAppIsPumped(WidgetTester tester) async {
-    await tester.pumpWidget(MyApp()); //MyApp(fakeNetWorkData)
+    await tester.pumpWidget(Provider<RssDataSourceController>(
+      create: (_) => RssDataSourceController(),
+      child: MyApp(),
+    ));
   }
 
   group('my PageView correctly works', () {
@@ -23,10 +29,6 @@ void main() {
   });
 }
 
-Future whenSwipeToRightToChangePage(WidgetTester tester) async {
-  await tester.fling(find.byType(LatestNewsPage), Offset(-300.0, 0.0), 1000);
-  await tester.pumpAndSettle();
-}
 
 void thenShouldBeLatestInAppBar() {
   expect(find.byKey(ValueKey('LatestAppBar')), findsOneWidget);

@@ -54,6 +54,7 @@ class MyInkWellRadio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final newsController = Provider.of<NewsController>(context);
     return ValueListenableBuilder<RssDataSourceModel>(
         valueListenable: myDataSourceController.rssDataSourceNotifier,
         builder: (_, rssDataSourceState, __) {
@@ -73,6 +74,7 @@ class MyInkWellRadio extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               myDataSourceController.changingDataSource(indx);
+              newsController.fetchNews(link: myDataSourceController.sourcesList[indx].link);
             },
           );
         });

@@ -2,6 +2,9 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:newsfeed/strings.dart';
+import 'package:webfeed/webfeed.dart';
+
+import '../main.dart';
 
 enum Pages { latest, history }
 
@@ -86,5 +89,20 @@ class RssDataSourceController {
 
   void changingDataSource(int index) {
     rssDataSourceNotifier.value = rssDataSources.sources[index];
+  }
+}
+
+class NewsController {
+  NewsController({this.getRssFromUrl, this.rssDataSourceController});
+
+  final GetRssFromUrl getRssFromUrl;
+  final RssDataSourceController rssDataSourceController;
+
+  ValueNotifier<RssFeed> rssFeedNotifier = ValueNotifier(RssFeed());
+
+  Future<void> fetchNews({String link}) async {
+    await getRssFromUrl(link != null ? link : rssDataSourceController.rssDataSourceNotifier.value.link).then((feed) {
+      rssFeedNotifier.value = feed;
+    });
   }
 }

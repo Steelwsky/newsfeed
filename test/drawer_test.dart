@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/app_bar.dart';
+import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
 import 'package:newsfeed/strings.dart';
+import 'package:provider/provider.dart';
+import 'package:webfeed/webfeed.dart';
+
+RssFeed myList = RssFeed(items: []);
 
 void main() {
   Future<void> givenAppIsPumped(WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(Provider<RssDataSourceController>(
+      create: (_) => RssDataSourceController(),
+      child: MyApp(getRssFromUrl: (String url) => Future.value(myList)),
+    ));
   }
 
   group('Drawer works properly', () {
@@ -43,7 +51,7 @@ void main() {
       await givenAppIsPumped(tester);
       await whenUserSwipesToCallDrawer(tester);
       expect(find.byKey(ValueKey('NY Times')), findsOneWidget);
-      await tester.tap(find.byKey(ValueKey('NY Times')));
+      await whenUserSelectsSourceInDrawer(tester);
       await tester.pumpAndSettle();
       thenShouldHaveClosedDrawer();
     });
@@ -53,8 +61,7 @@ void main() {
       expect(find.text('Latest - CNBC'), findsOneWidget);
       expect(find.text('Latest - NY Times'), findsNothing);
       await whenUserSwipesToCallDrawer(tester);
-      expect(find.byKey(ValueKey('NY Times')), findsOneWidget);
-      await tester.tap(find.byKey(ValueKey('NY Times')));
+      await whenUserSelectsSourceInDrawer(tester);
       await tester.pumpAndSettle();
       thenShouldHaveClosedDrawer();
       expect(find.text('Latest - CNBC'), findsNothing);
@@ -66,8 +73,7 @@ void main() {
       expect(find.text('Latest - CNBC'), findsOneWidget);
       expect(find.text('Latest - NY Times'), findsNothing);
       await whenUserSwipesToCallDrawer(tester);
-      expect(find.byKey(ValueKey('NY Times')), findsOneWidget);
-      await tester.tap(find.byKey(ValueKey('NY Times')));
+      await whenUserSelectsSourceInDrawer(tester);
       await tester.pumpAndSettle();
       thenShouldHaveClosedDrawer();
       expect(find.text('Latest - CNBC'), findsNothing);
@@ -80,8 +86,7 @@ void main() {
       await whenUserSwipesToCallDrawer(tester);
       expect(find.byIcon(Icons.radio_button_unchecked), findsOneWidget);
       expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
-      expect(find.byKey(ValueKey('NY Times')), findsOneWidget);
-      await tester.tap(find.byKey(ValueKey('NY Times')));
+      await whenUserSelectsSourceInDrawer(tester);
       await tester.pumpAndSettle();
       thenShouldHaveClosedDrawer();
       await whenUserSwipesToCallDrawer(tester);
@@ -98,6 +103,11 @@ Future whenUserSwipesToCallDrawer(WidgetTester tester) async {
 
 Future whenUserTapsToMenuIconToCallDrawer(WidgetTester tester) async {
   await tester.tap(find.byIcon(Icons.menu));
+  await tester.pumpAndSettle();
+}
+
+Future whenUserSelectsSourceInDrawer(WidgetTester tester) async {
+  await tester.tap(find.byKey(ValueKey('NY Times')));
   await tester.pumpAndSettle();
 }
 
