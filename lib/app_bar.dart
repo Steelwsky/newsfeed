@@ -16,13 +16,23 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final myPageController = Provider.of<MyPageController>(context);
     return ValueListenableBuilder(
-        valueListenable: myPageController.pageState,
+        valueListenable: myPageController.pageStateNotifier,
         builder: (_, pageState, __) {
           return AppBar(
-            title: pageState == 0
-                ? Text(LATEST, key: ValueKey('LatestAppBar'))
-                : Text(HISTORY, key: ValueKey('HistoryAppBar')),
+            title: pageState == 0 ? AppBarText() : Text(HISTORY, key: ValueKey('HistoryAppBar')),
           );
+        });
+  }
+}
+
+class AppBarText extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final myDataSourceController = Provider.of<RssDataSourceController>(context);
+    return ValueListenableBuilder<RssDataSourceModel>(
+        valueListenable: myDataSourceController.rssDataSourceNotifier,
+        builder: (_, rssDataSourceState, __) {
+          return Text('$LATEST - ${rssDataSourceState.shortName}', key: ValueKey('LatestAppBar'));
         });
   }
 }

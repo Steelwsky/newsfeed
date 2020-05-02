@@ -8,7 +8,7 @@ void main() {
     await tester.pumpWidget(MyApp()); //MyApp(fakeNetWorkData)
   }
 
-  group('pageView correctly works', () {
+  group('my PageView correctly works', () {
     testWidgets('Should have LATEST in app bar after app is pumped', (WidgetTester tester) async {
       await givenAppIsPumped(tester);
       thenShouldBeLatestInAppBar();
@@ -23,6 +23,11 @@ void main() {
   });
 }
 
+Future whenSwipeToRightToChangePage(WidgetTester tester) async {
+  await tester.fling(find.byType(LatestNewsPage), Offset(-300.0, 0.0), 1000);
+  await tester.pumpAndSettle();
+}
+
 void thenShouldBeLatestInAppBar() {
   expect(find.byKey(ValueKey('LatestAppBar')), findsOneWidget);
   expect(find.byKey(ValueKey('HistoryAppBar')), findsNothing);
@@ -33,7 +38,4 @@ void thenShouldBeHistoryInAppBar() {
   expect(find.byKey(ValueKey('LatestAppBar')), findsNothing);
 }
 
-Future whenSwipeToRightToChangePage(WidgetTester tester) async {
-  await tester.fling(find.byType(LatestNewsPage), Offset(-300.0, 0.0), 1000);
-  await tester.pumpAndSettle();
-}
+

@@ -10,7 +10,7 @@ class MyBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final myPageController = Provider.of<MyPageController>(context);
     return ValueListenableBuilder<int>(
-        valueListenable: myPageController.pageState,
+        valueListenable: myPageController.pageStateNotifier,
         builder: (_, pageState, __) {
           return BottomNavigationBar(
               items: [

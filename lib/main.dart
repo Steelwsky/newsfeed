@@ -11,13 +11,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     PageController pageController = PageController();
     return MultiProvider(
-        providers: [Provider<MyPageController>(create: (_) => MyPageController(pageController: pageController))],
+        providers: [
+          Provider<MyPageController>(create: (_) => MyPageController(pageController: pageController)),
+          Provider<RssDataSourceController>(create: (_) => RssDataSourceController())
+        ],
         child: MaterialApp(
-          title: 'News Feed',
-          theme: ThemeData(
-            primarySwatch: Colors.deepPurple,
-          ),
-          home: MyHomePage(),
-        ));
+            title: 'News Feed',
+            theme: ThemeData(
+              primarySwatch: Colors.deepPurple,
+            ),
+            home: MyHomePage()));
   }
 }

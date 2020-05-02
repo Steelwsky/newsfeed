@@ -33,27 +33,6 @@ void main() {
   });
 
   group('Clicking pages via nav bar correctly works', () {
-    testWidgets('Should see latest page after app is pumped', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
-      thenShouldBeLatestPage();
-    });
-
-    testWidgets('Should see history page after swipe', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
-      thenShouldBeLatestPage();
-      await whenSwipeToRightToChangePage(tester);
-      thenShouldBeHistoryPage();
-    });
-
-    testWidgets('Swiping back from history page should return to latest page', (WidgetTester tester) async {
-      await givenAppIsPumped(tester);
-      thenShouldBeLatestPage();
-      await whenSwipeToRightToChangePage(tester);
-      thenShouldBeHistoryPage();
-      await whenSwipeToLeftToChangePage(tester);
-      thenShouldBeLatestPage();
-    });
-
     testWidgets('Should see history page after clicking tab in nav bar', (WidgetTester tester) async {
       await givenAppIsPumped(tester);
       thenShouldBeLatestPage();
