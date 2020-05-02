@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/latest_news_page.dart';
-
 import 'package:newsfeed/main.dart';
-import 'package:newsfeed/strings.dart';
 
 void main() {
   Future<void> givenAppIsPumped(WidgetTester tester) async {
@@ -26,13 +24,13 @@ void main() {
 }
 
 void thenShouldBeLatestInAppBar() {
-  expect(find.text(LATEST), findsOneWidget);
-  expect(find.text(HISTORY), findsNothing);
+  expect(find.byKey(ValueKey('LatestAppBar')), findsOneWidget);
+  expect(find.byKey(ValueKey('HistoryAppBar')), findsNothing);
 }
 
 void thenShouldBeHistoryInAppBar() {
-  expect(find.text(HISTORY), findsOneWidget);
-  expect(find.text(LATEST), findsNothing);
+  expect(find.byKey(ValueKey('HistoryAppBar')), findsOneWidget);
+  expect(find.byKey(ValueKey('LatestAppBar')), findsNothing);
 }
 
 Future whenSwipeToRightToChangePage(WidgetTester tester) async {

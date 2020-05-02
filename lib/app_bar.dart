@@ -19,7 +19,9 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         valueListenable: myPageController.pageState,
         builder: (_, pageState, __) {
           return AppBar(
-            title: pageState == 0 ? Text(LATEST) : Text(HISTORY),
+            title: pageState == 0
+                ? Text(LATEST, key: ValueKey('LatestAppBar'))
+                : Text(HISTORY, key: ValueKey('HistoryAppBar')),
           );
         });
   }
