@@ -7,10 +7,8 @@ import 'package:webfeed/webfeed.dart';
 
 import 'home_page.dart';
 
-final MyRepository myRepository = MyRepository();
 
 typedef GetRssFromUrl = Future<RssFeed> Function(String url);
-
 typedef AddItemToHistory = void Function(RssItem item);
 typedef CheckNewsInHistoryByLink = bool Function(String link);
 typedef GetAllStorageItems = List<RssItem> Function();
@@ -24,22 +22,24 @@ class NetworkResponseToRssParser {
 }
 
 abstract class MyStorageConcept {
-  MyStorageConcept({this.addItemToHistory, this.checkNewsInHistoryByLink, this.getAllStorageItems});
+  MyStorageConcept({this.addItem, this.isItemInHistory, this.getAll});
 
-  final AddItemToHistory addItemToHistory;
-  final CheckNewsInHistoryByLink checkNewsInHistoryByLink;
-  final GetAllStorageItems getAllStorageItems;
+  final AddItemToHistory addItem;
+  final CheckNewsInHistoryByLink isItemInHistory;
+  final GetAllStorageItems getAll;
 }
 
 class MyStorage implements MyStorageConcept {
-  @override
-  AddItemToHistory get addItemToHistory => myRepository.addToHistory;
+  MyRepository myRepository = MyRepository();
 
   @override
-  CheckNewsInHistoryByLink get checkNewsInHistoryByLink => myRepository.isViewedItemByLink;
+  AddItemToHistory get addItem => myRepository.addToHistory;
 
   @override
-  GetAllStorageItems get getAllStorageItems => myRepository.getCurrentList;
+  CheckNewsInHistoryByLink get isItemInHistory => myRepository.isViewedItemByLink;
+
+  @override
+  GetAllStorageItems get getAll => myRepository.getCurrentList;
 }
 
 void main() {
@@ -47,44 +47,39 @@ void main() {
   final rssParser = NetworkResponseToRssParser();
   final MyStorageConcept myStorage = MyStorage();
 
-  runApp(
-    Provider<RssDataSourceController>(
-      create: (_) => RssDataSourceController(),
-      child: MyApp(
-          getRssFromUrl: (url) =>
-              client.get(url).then((data) {
-                return rssParser.mapToRss(data);
-              }),
-          myStorage: myStorage),
-    ),
-  );
+  runApp(MyApp(
+    getRssFromUrl: (url) => client.get(url).then(rssParser.mapToRss),
+    myStorage: myStorage,
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({this.getRssFromUrl, this.myStorage});
 
   final GetRssFromUrl getRssFromUrl;
   final MyStorageConcept myStorage;
 
   @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final PageController pageController = PageController();
+
+  @override
   Widget build(BuildContext context) {
-    PageController pageController = PageController();
-    final rssDataSourceController = Provider.of<RssDataSourceController>(context);
     return MultiProvider(
         providers: [
           Provider<MyPageController>(create: (_) => MyPageController(pageController: pageController)),
           Provider<NewsController>(
               create: (_) =>
                   NewsController(
-                      getRssFromUrl: getRssFromUrl,
-                      rssDataSourceController: rssDataSourceController,
-                      myStorage: myStorage)),
+                      getRssFromUrl: widget.getRssFromUrl,
+                      myStorage: widget.myStorage)),
         ],
         child: MaterialApp(
             title: 'News Feed',
-            theme: ThemeData(
-              primarySwatch: Colors.deepPurple,
-            ),
-            home: MyHomePage(myStorage: myStorage)));
+            theme: ThemeData(primarySwatch: Colors.deepPurple),
+            home: MyHomePage(myStorage: widget.myStorage)));
   }
 }

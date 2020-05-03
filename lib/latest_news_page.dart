@@ -9,21 +9,21 @@ class LatestNewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final myNewsController = Provider.of<NewsController>(context);
-    return ValueListenableBuilder<PreparedFeed>(
+    return ValueListenableBuilder<Iterable<FeedRssItem>>(
         valueListenable: myNewsController.preparedRssFeedNotifier,
         builder: (_, preparedRssFeed, __) {
           return RefreshIndicator(
               key: ValueKey('latestNewsPage'),
               onRefresh: myNewsController.fetchNews,
-              child: preparedRssFeed.items == null
+              child: preparedRssFeed.isEmpty
                   ? EmptyList()
                   : ListView(
                   key: PageStorageKey('latest'),
-                  children: preparedRssFeed.items
+                  children: preparedRssFeed.toList()
                       .map(
                         (i) =>
                         ListTile(
-                          key: ValueKey('item${preparedRssFeed.items.indexOf(i)}'),
+                          key: ValueKey('item${preparedRssFeed.toList().indexOf(i)}'),
                           title: Text(
                             i.item.title,
                             style: TextStyle(fontSize: 18),
@@ -34,10 +34,10 @@ class LatestNewsPage extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(fontSize: 16),
                           ),
-                          trailing: Icon(
-                              i.isViewed ? Icons.bookmark : Icons.bookmark_border, size: 24, color: Colors.amber),
+                          trailing: Icon(i.isViewed ? Icons.bookmark : Icons.bookmark_border,
+                              size: 24, color: Colors.amber),
                           onTap: () {
-                            myNewsController.addToHistory(item: i.item, position: preparedRssFeed.items.indexOf(i));
+                            myNewsController.addToHistory(item: i.item);
                             Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: i.item)));
                           },

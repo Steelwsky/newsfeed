@@ -7,7 +7,7 @@ import 'controller/common_news_controller.dart';
 class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final myDataSourceController = Provider.of<RssDataSourceController>(context);
+    final newsController = Provider.of<NewsController>(context);
     return Drawer(
       key: ValueKey('drawer'),
       child: ListView(
@@ -31,11 +31,13 @@ class MyDrawer extends StatelessWidget {
                   padding: EdgeInsets.only(top: 0),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: myDataSourceController.sourcesList.length,
+                  itemCount: newsController
+                      .getDataSource()
+                      .length,
                   itemBuilder: (BuildContext _, int index) {
                     return MyInkWellRadio(
                       indx: index,
-                      myDataSourceController: myDataSourceController,
+//                      myDataSourceController: newsController,
                     );
                   }),
             ],
@@ -47,34 +49,35 @@ class MyDrawer extends StatelessWidget {
 }
 
 class MyInkWellRadio extends StatelessWidget {
-  MyInkWellRadio({this.indx, this.myDataSourceController});
+  MyInkWellRadio({this.indx});
 
   final int indx;
-  final RssDataSourceController myDataSourceController;
+
+//  final RssDataSourceController myDataSourceController;
 
   @override
   Widget build(BuildContext context) {
     final newsController = Provider.of<NewsController>(context);
     return ValueListenableBuilder<RssDataSourceModel>(
-        valueListenable: myDataSourceController.rssDataSourceNotifier,
+        valueListenable: newsController.rssDataSourceNotifier,
         builder: (_, rssDataSourceState, __) {
           return InkWell(
             child: ListTile(
-              key: ValueKey('${myDataSourceController.sourcesList[indx].shortName}'),
+              key: ValueKey('${newsController.getDataSource()[indx].shortName}'),
               title: Text(
-                myDataSourceController.sourcesList[indx].longName,
+                newsController.getDataSource()[indx].longName,
                 style: TextStyle(fontSize: 18),
               ),
               trailing: Icon(
-                  rssDataSourceState == myDataSourceController.sourcesList[indx]
+                  rssDataSourceState == newsController.getDataSource()[indx]
                       ? Icons.radio_button_checked
                       : Icons.radio_button_unchecked,
                   color: Colors.deepOrange),
             ),
             onTap: () {
               Navigator.pop(context);
-              myDataSourceController.changingDataSource(indx);
-              newsController.fetchNews(link: myDataSourceController.sourcesList[indx].link);
+              newsController.changingDataSource(newsController.getDataSource()[indx].source);
+              newsController.fetchNews(link: newsController.getDataSource()[indx].link);
             },
           );
         });

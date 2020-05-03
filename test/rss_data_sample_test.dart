@@ -8,3 +8,5 @@ List<RssItem> fakeRssItems = [
   RssItem(title: 'ItemTitle 5', description: 'Description 5', link: 'link5', guid: 'guid5'),
   RssItem(title: 'ItemTitle 6', description: 'Description 6', link: 'link6', guid: 'guid6'),
 ];
+
+RssFeed feed = RssFeed(items: fakeRssItems);

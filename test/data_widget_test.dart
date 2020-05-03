@@ -2,86 +2,80 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
 import 'package:newsfeed/strings.dart';
-import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
 import 'page_view_test.dart';
 import 'rss_data_sample_test.dart';
 
-RssFeed myList = RssFeed(items: []);
-List<RssItem> historyList = [];
-
-FakeStorage fakeStorage = FakeStorage();
-
 void main() {
-  Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
-    await tester.pumpWidget(Provider<RssDataSourceController>(
-      create: (_) => RssDataSourceController(),
-      child: MyApp(
-        getRssFromUrl: (String url) => Future.value(myList),
+  Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage, Completer<RssFeed> completer) async {
+    await tester.pumpWidget(
+      MyApp(
+        getRssFromUrl: (String url) => completer.future,
         myStorage: fakeStorage,
       ),
-    ));
+    );
   }
 
   group('fetching data', () {
     testWidgets('Pulling down the screen should return news', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
-      thenShouldFindNews(amount: fakeRssItems.length);
+      thenShouldSeeLoadingIndicator();
+      completer.complete(feed);
+      await tester.pumpAndSettle();
+      thenShouldFindNews(amount: feed.items.length);
     });
 
     testWidgets('All news have blank bookmark icons after', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.clear();
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
-      thenShouldFindNews(amount: fakeRssItems.length);
-      expect(find.byIcon(Icons.bookmark_border), findsNWidgets(fakeRssItems.length));
+      completer.complete(feed);
+      await tester.pumpAndSettle();
+      thenShouldFindNews(amount: feed.items.length);
+      expect(find.byIcon(Icons.bookmark_border), findsNWidgets(feed.items.length));
     });
 
     testWidgets('News has title and description', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.clear();
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
-      expect(find.text(myList.items.first.title), findsOneWidget);
-      expect(find.text(myList.items.first.description), findsOneWidget);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
+      expect(find.text(feed.items.first.title), findsOneWidget);
+      expect(find.text(feed.items.first.description), findsOneWidget);
     });
 
     testWidgets('news page opens after selecting in news list', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.clear();
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
       await whenUserTapsToNews(tester);
       thenShouldBeInSelectedNews();
     });
 
-    testWidgets('tapping on bacButton returning to news list', (WidgetTester tester) async {
+    testWidgets('tapping on backButton in selected news returning to news list', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.clear();
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
       await whenUserTapsToNews(tester);
       thenShouldBeInSelectedNews();
       await whenUserTapsToBackButton(tester);
@@ -90,12 +84,12 @@ void main() {
 
     testWidgets('viewed news has filled bookmark icon', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.clear();
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
       await whenUserTapsToNews(tester);
       thenShouldBeInSelectedNews();
       await whenUserTapsToBackButton(tester);
@@ -104,20 +98,24 @@ void main() {
 
     testWidgets('viewed news should be in history page', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      historyList = [];
-      myList.items.clear();
-      myList.items.addAll(fakeRssItems);
-      await givenAppIsPumped(tester, fakeStorage);
+      fakeStorage.historyList = [];
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
       await whenUserTapsToNews(tester);
       await whenUserTapsToBackButton(tester);
       await whenSwipeToRightToChangePage(tester);
       thenShouldNewsIsFoundInHistory();
       expect(find.text(EMPTY_HISTORY), findsNothing);
     });
-
   });
+}
+
+void thenShouldSeeLoadingIndicator() {
+  expect(find.byType(RefreshProgressIndicator), findsOneWidget);
 }
 
 void thenShouldBeEmptyLatestPage() {
@@ -142,11 +140,11 @@ void thenShouldNewsIsFoundInHistory() {
 
 Future whenUserPullsToRefresh(WidgetTester tester) async {
   await tester.drag(find.byType(RefreshIndicator), Offset(100.0, 500.0));
-  await tester.pumpAndSettle();
+  await tester.pump();
 }
 
 Future whenUserTapsToNews(WidgetTester tester) async {
-  await tester.tap(find.text(myList.items.first.title));
+  await tester.tap(find.text(feed.items.first.title));
   await tester.pumpAndSettle();
 }
 
@@ -155,17 +153,18 @@ Future whenUserTapsToBackButton(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-
 class FakeStorage implements MyStorageConcept {
+  List<RssItem> historyList = [];
+
   @override
-  get addItemToHistory =>
+  get addItem =>
           (rssItem) {
         historyList.add(rssItem);
         print('ADDED NEW ITEM: ${historyList.last.title}');
       };
 
   @override
-  get checkNewsInHistoryByLink =>
+  get isItemInHistory =>
           (link) {
         bool myBool = false;
         for (var i = 0; i < historyList.length; i++) {
@@ -176,7 +175,6 @@ class FakeStorage implements MyStorageConcept {
         return myBool;
       };
 
-
   @override
-  get getAllStorageItems => () => historyList;
+  get getAll => () => historyList;
 }

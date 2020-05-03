@@ -28,9 +28,9 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
 class AppBarText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final myDataSourceController = Provider.of<RssDataSourceController>(context);
+    final newsController = Provider.of<NewsController>(context);
     return ValueListenableBuilder<RssDataSourceModel>(
-        valueListenable: myDataSourceController.rssDataSourceNotifier,
+        valueListenable: newsController.rssDataSourceNotifier,
         builder: (_, rssDataSourceState, __) {
           return Text('$LATEST - ${rssDataSourceState.shortName}', key: ValueKey('LatestAppBar'));
         });

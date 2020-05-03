@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/app_bar.dart';
-import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
 import 'package:newsfeed/strings.dart';
-import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
-import 'data_appearance_test.dart';
+import 'data_widget_test.dart';
 
 RssFeed myList = RssFeed(items: []);
 
@@ -15,13 +13,11 @@ FakeStorage fakeStorage = FakeStorage();
 
 void main() {
   Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
-    await tester.pumpWidget(Provider<RssDataSourceController>(
-      create: (_) => RssDataSourceController(),
-      child: MyApp(
+    await tester.pumpWidget(MyApp(
         getRssFromUrl: (String url) => Future.value(myList),
         myStorage: fakeStorage,
       ),
-    ));
+    );
   }
 
   group('Drawer works properly', () {

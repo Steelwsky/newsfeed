@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/history_news_page.dart';
 import 'package:newsfeed/latest_news_page.dart';
 import 'package:newsfeed/main.dart';
-import 'package:provider/provider.dart';
 
-import 'data_appearance_test.dart';
+import 'data_widget_test.dart';
+import 'rss_data_sample_test.dart';
 
 
 void main() {
   Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
-    await tester.pumpWidget(Provider<RssDataSourceController>(
-      create: (_) => RssDataSourceController(),
-      child: MyApp(
-        getRssFromUrl: (String url) => Future.value(myList),
+    await tester.pumpWidget(MyApp(
+      getRssFromUrl: (String url) => Future.value(feed),
         myStorage: fakeStorage,
       ),
-    ));
+    );
   }
 
   group('Swiping pages correctly works', () {

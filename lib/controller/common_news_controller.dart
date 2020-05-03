@@ -20,7 +20,11 @@ class MyPageController {
   }
 
   void pageNavBarChange(int pageIndex) {
-    pageController.animateToPage(pageIndex, duration: Duration(milliseconds: 500), curve: Curves.ease);
+    pageController.animateToPage(
+      pageIndex,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
     pageStateNotifier.value = pageIndex;
   }
 }
@@ -37,8 +41,16 @@ class BottomNavBarItems {
 
   BottomNavBarItems() {
     _tabs = [
-      BottomNavBarItemModel(name: LATEST, icon: Icon(Icons.home)),
-      BottomNavBarItemModel(name: HISTORY, icon: Icon(Icons.history))
+      BottomNavBarItemModel(
+          name: LATEST,
+          icon: Icon(
+            Icons.home,
+          )),
+      BottomNavBarItemModel(
+          name: HISTORY,
+          icon: Icon(
+            Icons.history,
+          ))
     ];
   }
 
@@ -79,78 +91,77 @@ class RssDataSourcesList {
     ];
   }
 
-  UnmodifiableListView<RssDataSourceModel> get sources => UnmodifiableListView(_sources);
-}
-
-class RssDataSourceController {
-  static RssDataSourcesList rssDataSources = RssDataSourcesList();
-  ValueNotifier<RssDataSourceModel> rssDataSourceNotifier = ValueNotifier(rssDataSources.sources.first);
-  final sourcesList = rssDataSources.sources;
-
-  void changingDataSource(int index) {
-    rssDataSourceNotifier.value = rssDataSources.sources[index];
-  }
+  List<RssDataSourceModel> get sources => _sources;
 }
 
 class NewsController {
-  NewsController({this.getRssFromUrl, this.rssDataSourceController, this.myStorage}) {
+  NewsController({this.getRssFromUrl, this.myStorage}) {
+    print('updating history list in newsController');
     updateHistoryList();
   }
 
   final GetRssFromUrl getRssFromUrl;
-  final RssDataSourceController rssDataSourceController;
   final MyStorageConcept myStorage;
+  static RssDataSourcesList rssDataSourcesList = RssDataSourcesList();
 
-  ValueNotifier<PreparedFeed> preparedRssFeedNotifier = ValueNotifier(PreparedFeed());
+  ValueNotifier<Iterable<FeedRssItem>> preparedRssFeedNotifier = ValueNotifier([]);
 
-  ValueNotifier<List<RssItem>> historyListNotifier = ValueNotifier([]);
+  ValueNotifier<Iterable<RssItem>> historyListNotifier = ValueNotifier([]);
 
-  Future<void> fetchNews({String link}) async {
-    await getRssFromUrl(link != null ? link : rssDataSourceController.rssDataSourceNotifier.value.link).then((feed) {
+  ValueNotifier<RssDataSourceModel> rssDataSourceNotifier = ValueNotifier(rssDataSourcesList.sources.first);
+
+  List<RssDataSourceModel> getDataSource() => rssDataSourcesList.sources;
+
+  void changingDataSource(DataSource source) {
+    print('source index: ${source.index}');
+    final dataSource = getDataSource()[source.index];
+    rssDataSourceNotifier.value = dataSource;
+  }
+
+  Future<void> fetchNews({@required String link}) async {
+    print('inside');
+    await getRssFromUrl(link != null ? link : rssDataSourceNotifier.value.link).then((feed) {
+      print('getRssFromUrl');
       checkViewedNews(feed);
     });
   }
 
   void checkViewedNews(RssFeed feed) {
-    final List<MyRssItem> listItem = List<MyRssItem>();
-    final preparedFeed = PreparedFeed(items: listItem);
-    print(preparedFeed.items);
+    final List<FeedRssItem> preparedFeed = [];
+    print('length: ${preparedFeed.length}');
     for (var i = 0; i < feed.items.length; i++) {
-      preparedFeed.items.add(MyRssItem(item: feed.items[i], isViewed: isNewsInHistory(feed.items[i])));
+      preparedFeed.add(FeedRssItem(item: feed.items[i], isViewed: isNewsInHistory(feed.items[i])));
     }
     preparedRssFeedNotifier.value = preparedFeed;
   }
 
   bool isNewsInHistory(RssItem item) {
-    return myStorage.checkNewsInHistoryByLink(item.link);
+    return myStorage.isItemInHistory(item.link);
   }
 
-  void addToHistory({RssItem item, int position}) {
+  void addToHistory({RssItem item}) {
     if (isNewsInHistory(item) == false) {
-      myStorage.addItemToHistory(item);
-      final list = preparedRssFeedNotifier.value.items;
-      list[position] = MyRssItem(item: list
-          .elementAt(position)
-          .item, isViewed: true);
-      preparedRssFeedNotifier.value = PreparedFeed(items: list);
+      myStorage.addItem(item);
+      fetchNews(link: rssDataSourceNotifier.value.link); //todo bad code here
       updateHistoryList();
+//      final list = preparedRssFeedNotifier.value;
+//      list[position] = FeedRssItem(item: list.elementAt(position).item); //todo Map?
+//      preparedRssFeedNotifier.value = PreparedFeed(items: list);
     }
   }
 
+//  void _markAsViewedInLatest(RssItem item) {
+//    final list = preparedRssFeedNotifier.value.toList();
+//  }
+
   void updateHistoryList() {
-    historyListNotifier.value = myStorage.getAllStorageItems();
+    historyListNotifier.value = myStorage.getAll();
   }
 }
 
-class MyRssItem {
-  MyRssItem({this.item, this.isViewed});
+class FeedRssItem {
+  FeedRssItem({this.item, this.isViewed});
 
   final RssItem item;
   final bool isViewed;
-}
-
-class PreparedFeed {
-  PreparedFeed({this.items});
-
-  final List<MyRssItem> items;
 }
