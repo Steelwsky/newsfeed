@@ -37,7 +37,6 @@ class MyDrawer extends StatelessWidget {
                   itemBuilder: (BuildContext _, int index) {
                     return MyInkWellRadio(
                       indx: index,
-//                      myDataSourceController: newsController,
                     );
                   }),
             ],
@@ -52,8 +51,6 @@ class MyInkWellRadio extends StatelessWidget {
   MyInkWellRadio({this.indx});
 
   final int indx;
-
-//  final RssDataSourceController myDataSourceController;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +74,7 @@ class MyInkWellRadio extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               newsController.changingDataSource(newsController.getDataSource()[indx].source);
-              newsController.fetchNews(link: newsController.getDataSource()[indx].link);
+              newsController.fetchNews();
             },
           );
         });

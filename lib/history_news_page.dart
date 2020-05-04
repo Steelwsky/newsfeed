@@ -4,6 +4,8 @@ import 'package:newsfeed/strings.dart';
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
+import 'selected_news_page.dart';
+
 class HistoryNewsPage extends StatelessWidget {
   const HistoryNewsPage({Key key}) : super(key: key);
 
@@ -44,7 +46,9 @@ class MyHistory extends StatelessWidget {
             style: TextStyle(fontSize: 16),
           ),
           trailing: Icon(Icons.bookmark, size: 24, color: Colors.amber),
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: historyItem)));
+          },
         );
       },
     );

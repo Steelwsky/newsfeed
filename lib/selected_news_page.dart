@@ -31,7 +31,9 @@ class SelectedNewsPage extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: InkWell(
-                              onTap: () async {},
+                              onTap: () async {
+                                //todo here url_launcher
+                              },
                               child: Row(
                                 children: <Widget>[
                                   SizedBox(

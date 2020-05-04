@@ -21,25 +21,25 @@ void main() {
     testWidgets('Should see latest page after app is pumped', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
       await givenAppIsPumped(tester, fakeStorage);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
     });
 
     testWidgets('Should see history page after swipe', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
       await givenAppIsPumped(tester, fakeStorage);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
       await whenSwipeToRightToChangePage(tester);
-      thenShouldBeEmptyHistoryPage();
+      thenShouldBeInHistoryPage();
     });
 
     testWidgets('Swiping back from history page should return to latest page', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
       await givenAppIsPumped(tester, fakeStorage);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
       await whenSwipeToRightToChangePage(tester);
-      thenShouldBeEmptyHistoryPage();
+      thenShouldBeInHistoryPage();
       await whenSwipeToLeftToChangePage(tester);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
     });
   });
 
@@ -47,19 +47,19 @@ void main() {
     testWidgets('Should see history page after clicking tab in nav bar', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
       await givenAppIsPumped(tester, fakeStorage);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
       await whenClickToChangePage(tester, Icons.history);
-      thenShouldBeEmptyHistoryPage();
+      thenShouldBeInHistoryPage();
     });
 
     testWidgets('Should see latest page after clicking tab in nav bar', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
       await givenAppIsPumped(tester, fakeStorage);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
       await whenClickToChangePage(tester, Icons.history);
-      thenShouldBeEmptyHistoryPage();
+      thenShouldBeInHistoryPage();
       await whenClickToChangePage(tester, Icons.home);
-      thenShouldBeLatestPage();
+      thenShouldBeInLatestPage();
     });
   });
 }
@@ -79,12 +79,12 @@ Future whenClickToChangePage(WidgetTester tester, IconData icon) async {
   await tester.pumpAndSettle();
 }
 
-void thenShouldBeLatestPage() {
+void thenShouldBeInLatestPage() {
   expect(find.byKey(ValueKey('latestNewsPage')), findsOneWidget);
   expect(find.byKey(ValueKey('emptyHistory')), findsNothing);
 }
 
-void thenShouldBeEmptyHistoryPage() {
+void thenShouldBeInHistoryPage() {
   expect(find.byKey(ValueKey('emptyHistory')), findsOneWidget);
   expect(find.byKey(ValueKey('latestNewsPage')), findsNothing);
 }

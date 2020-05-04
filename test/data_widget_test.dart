@@ -111,6 +111,45 @@ void main() {
       thenShouldNewsIsFoundInHistory();
       expect(find.text(EMPTY_HISTORY), findsNothing);
     });
+
+    testWidgets('history page: taps to delete icon should delete history', (WidgetTester tester) async {
+      FakeStorage fakeStorage = FakeStorage();
+      fakeStorage.historyList = [];
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
+      thenShouldBeEmptyLatestPage();
+      await whenUserPullsToRefresh(tester);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
+      await whenUserTapsToNews(tester);
+      await whenUserTapsToBackButton(tester);
+      await whenSwipeToRightToChangePage(tester);
+      thenShouldNewsIsFoundInHistory();
+      expect(find.text(EMPTY_HISTORY), findsNothing);
+      await whenUserTapsToDeleteIcon(tester);
+      thenShouldBeEmptyHistory();
+    });
+
+    testWidgets('latest page: taps to delete icon should delete history', (WidgetTester tester) async {
+      FakeStorage fakeStorage = FakeStorage();
+      fakeStorage.historyList = [];
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
+      thenShouldBeEmptyLatestPage();
+      await whenUserPullsToRefresh(tester);
+      completer.complete(feed);
+      await tester.pumpAndSettle();
+      await whenUserTapsToNews(tester);
+      await whenUserTapsToBackButton(tester);
+      await whenSwipeToRightToChangePage(tester);
+      thenShouldNewsIsFoundInHistory();
+      await whenSwipeToLeftToChangePage(tester);
+      thenShouldBeInLatestPage();
+      await whenUserTapsToDeleteIcon(tester);
+      await whenSwipeToRightToChangePage(tester);
+      thenShouldBeEmptyHistory();
+    });
+    
   });
 }
 
@@ -138,6 +177,11 @@ void thenShouldNewsIsFoundInHistory() {
   expect(find.byType(ListTile), findsOneWidget);
 }
 
+void thenShouldBeEmptyHistory() {
+  expect(find.byType(ListTile), findsNothing);
+  expect(find.text(EMPTY_HISTORY), findsOneWidget);
+}
+
 Future whenUserPullsToRefresh(WidgetTester tester) async {
   await tester.drag(find.byType(RefreshIndicator), Offset(100.0, 500.0));
   await tester.pump();
@@ -150,6 +194,11 @@ Future whenUserTapsToNews(WidgetTester tester) async {
 
 Future whenUserTapsToBackButton(WidgetTester tester) async {
   await tester.tap(find.byType(BackButtonIcon));
+  await tester.pumpAndSettle();
+}
+
+Future whenUserTapsToDeleteIcon(WidgetTester tester) async {
+  await tester.tap(find.byIcon(Icons.delete));
   await tester.pumpAndSettle();
 }
 
@@ -177,4 +226,7 @@ class FakeStorage implements MyStorageConcept {
 
   @override
   get getAll => () => historyList;
+
+  @override
+  get deleteHistory => () => historyList = [];
 }

@@ -113,22 +113,17 @@ class NewsController {
   List<RssDataSourceModel> getDataSource() => rssDataSourcesList.sources;
 
   void changingDataSource(DataSource source) {
-    print('source index: ${source.index}');
-    final dataSource = getDataSource()[source.index];
-    rssDataSourceNotifier.value = dataSource;
+    rssDataSourceNotifier.value = getDataSource()[source.index];
   }
 
-  Future<void> fetchNews({@required String link}) async {
-    print('inside');
-    await getRssFromUrl(link != null ? link : rssDataSourceNotifier.value.link).then((feed) {
-      print('getRssFromUrl');
+  Future<void> fetchNews() async {
+    await getRssFromUrl(rssDataSourceNotifier.value.link).then((feed) {
       checkViewedNews(feed);
     });
   }
 
   void checkViewedNews(RssFeed feed) {
     final List<FeedRssItem> preparedFeed = [];
-    print('length: ${preparedFeed.length}');
     for (var i = 0; i < feed.items.length; i++) {
       preparedFeed.add(FeedRssItem(item: feed.items[i], isViewed: isNewsInHistory(feed.items[i])));
     }
@@ -142,17 +137,16 @@ class NewsController {
   void addToHistory({RssItem item}) {
     if (isNewsInHistory(item) == false) {
       myStorage.addItem(item);
-      fetchNews(link: rssDataSourceNotifier.value.link); //todo bad code here
       updateHistoryList();
-//      final list = preparedRssFeedNotifier.value;
-//      list[position] = FeedRssItem(item: list.elementAt(position).item); //todo Map?
-//      preparedRssFeedNotifier.value = PreparedFeed(items: list);
+      fetchNews(); //bad code here
     }
   }
 
-//  void _markAsViewedInLatest(RssItem item) {
-//    final list = preparedRssFeedNotifier.value.toList();
-//  }
+  void deleteHistory() {
+    historyListNotifier.value = myStorage.deleteHistory();
+    updateHistoryList();
+    fetchNews();
+  }
 
   void updateHistoryList() {
     historyListNotifier.value = myStorage.getAll();

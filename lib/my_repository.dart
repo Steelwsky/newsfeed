@@ -17,6 +17,12 @@ class MyRepository {
   List<RssItem> getCurrentList() {
     return _repositoryItems;
   }
+
+  List<RssItem> deleteHistory() {
+    _repositoryItems = [];
+    _repositoryLinks = [];
+    return _repositoryItems;
+  }
 }
 
 class RepositoryItems {

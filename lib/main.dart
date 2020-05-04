@@ -12,6 +12,7 @@ typedef GetRssFromUrl = Future<RssFeed> Function(String url);
 typedef AddItemToHistory = void Function(RssItem item);
 typedef CheckNewsInHistoryByLink = bool Function(String link);
 typedef GetAllStorageItems = List<RssItem> Function();
+typedef DeleteHistory = List<RssItem> Function();
 
 class NetworkResponseToRssParser {
   RssFeed mapToRss(http.Response response) {
@@ -22,11 +23,12 @@ class NetworkResponseToRssParser {
 }
 
 abstract class MyStorageConcept {
-  MyStorageConcept({this.addItem, this.isItemInHistory, this.getAll});
+  MyStorageConcept({this.addItem, this.isItemInHistory, this.getAll, this.deleteHistory});
 
   final AddItemToHistory addItem;
   final CheckNewsInHistoryByLink isItemInHistory;
   final GetAllStorageItems getAll;
+  final DeleteHistory deleteHistory;
 }
 
 class MyStorage implements MyStorageConcept {
@@ -40,6 +42,9 @@ class MyStorage implements MyStorageConcept {
 
   @override
   GetAllStorageItems get getAll => myRepository.getCurrentList;
+
+  @override
+  DeleteHistory get deleteHistory => myRepository.deleteHistory;
 }
 
 void main() {
