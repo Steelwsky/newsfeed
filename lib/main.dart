@@ -38,7 +38,7 @@ class MyDatabase implements MyStorageConcept {
   AddItemToHistory get addItem => firestoreDatabase.addToHistory;
 
   @override
-  GetStreamHistory get streamHistory => firestoreDatabase.getHistory; //rename getAll
+  GetStreamHistory get streamHistory => firestoreDatabase.getHistory;
 
   @override
   DeleteHistory get deleteHistory => firestoreDatabase.deleteHistory;

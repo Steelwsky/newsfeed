@@ -3,15 +3,18 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
-import 'package:uuid/uuid.dart';
 import 'package:webfeed/webfeed.dart';
+
 import 'rss_data_sample_test.dart';
 
 void main() {
   group('NewsController', () {
     test('retrieving data source list', () {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(null),
+        myDatabase: fakeStorage,
+      );
       final rssDataSourcesList = RssDataSourcesList();
 
       var receivedList = newsController.getDataSource();
@@ -20,7 +23,10 @@ void main() {
 
     test('data source changes', () {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(null),
+        myDatabase: fakeStorage,
+      );
       final rssDataSourcesList = RssDataSourcesList();
 
       newsController.rssDataSourceNotifier.value = null;
@@ -32,7 +38,10 @@ void main() {
 
     test('checkViewedNews adds feed items to rssFeedNotifier', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(null),
+        myDatabase: fakeStorage,
+      );
 
       var expectedFeedLength;
       newsController.preparedRssFeedNotifier.addListener(() {
@@ -47,74 +56,69 @@ void main() {
 
     test('isNewsInHistory returns false', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
+      final singleItem = [RssItem(title: '123')];
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        myDatabase: fakeStorage,
+      );
 
-      var resultBool = await newsController.isNewsInHistory(uuid: Uuid().v5(feed.items.first.title, 'UUID'));
+      var resultBool = await newsController.isNewsInHistory(uuid: singleItem.first.title);
       expect(resultBool, false);
     });
 
     test('isNewsInHistory returns true', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
+      final singleItem = [RssItem(title: '123')];
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        myDatabase: fakeStorage,
+      );
 
-      final itemId = Uuid().v5(feed.items.first.title, 'UUID');
-      fakeStorage.listOfIds.add(itemId);
+//      final itemId = Uuid().v5(feed.items.first.title, 'UUID'); // actually we don't need to implement uuid for testing isInHistory
+      fakeStorage.listOfIds.add(singleItem.first.title);
 
-      var resultBool = await newsController.isNewsInHistory(uuid: itemId);
+      var resultBool = await newsController.isNewsInHistory(uuid: singleItem.first.title);
       expect(resultBool, true);
     });
 
     test('item is added to storage when addToHistory is called', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final singleItem = [RssItem(title: '123')];
-      final newsController =
-          NewsController(getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)), myDatabase: fakeStorage);
+      final singleItem = [RssItem(title: 'title', guid: '111')];
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        myDatabase: fakeStorage,
+      );
 
       expect(fakeStorage.historyList.length, 0);
       await newsController.addToHistory(item: singleItem.first);
       expect(fakeStorage.historyList.length, 1);
     });
 
-    test('item is added to storage when addToHistory2121 is called', () async {
-      FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
-      final oldItem = feed.items.first;
-      final itemId = Uuid().v5(oldItem.title, 'UUID');
-      newsController.rssFeedNotifier.value = feed;
-
-      RssItem rssItem = RssItem(title: oldItem.title, guid: itemId);
-
-      expect(fakeStorage.listOfIds.length, 0);
-      await newsController.addToHistory(item: rssItem);
-      expect(fakeStorage.listOfIds.length, 1);
-    });
-
     test('item isn\'t added to history, already exists', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
-      final oldItem = feed.items.first;
-      final itemId = Uuid().v5(oldItem.title, 'UUID');
-      newsController.rssFeedNotifier.value = feed;
+      final singleItem = [RssItem(title: 'title', guid: '111')];
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        myDatabase: fakeStorage,
+      );
 
-      RssItem rssItem = RssItem(title: oldItem.title, guid: itemId);
-      fakeStorage.historyList.add(rssItem);
-      fakeStorage.listOfIds.add(rssItem.guid);
+      fakeStorage.historyList.add(singleItem.first);
+      fakeStorage.listOfIds.add(singleItem.first.guid);
 
       expect(fakeStorage.historyList.length, 1);
-      await newsController.addToHistory(item: rssItem);
+      await newsController.addToHistory(item: singleItem.first);
       expect(fakeStorage.historyList.length, 1);
     });
 
     test('deleting leads to empty history list of items', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
-      final oldItem = feed.items.first;
-      final itemId = Uuid().v5(oldItem.title, 'UUID');
-      newsController.rssFeedNotifier.value = feed;
-      RssItem rssItem = RssItem(title: oldItem.title, guid: itemId);
+      final singleItem = [RssItem(title: 'title', guid: '111')];
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        myDatabase: fakeStorage,
+      );
 
-      fakeStorage.historyList.add(rssItem);
-      fakeStorage.listOfIds.add(rssItem.guid);
+      fakeStorage.historyList.add(singleItem.first);
 
       expect(fakeStorage.historyList.length, 1);
       await newsController.deleteHistory();
@@ -123,14 +127,13 @@ void main() {
 
     test('deleting leads to empty history list of ids', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final newsController = NewsController(getRssFromUrl: (url) => Future.value(feed), myDatabase: fakeStorage);
-      final oldItem = feed.items.first;
-      final itemId = Uuid().v5(oldItem.title, 'UUID');
-      newsController.rssFeedNotifier.value = feed;
-      RssItem rssItem = RssItem(title: oldItem.title, guid: itemId);
+      final singleItem = [RssItem(title: 'title', guid: '111')];
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        myDatabase: fakeStorage,
+      );
 
-      fakeStorage.historyList.add(rssItem);
-      fakeStorage.listOfIds.add(rssItem.guid);
+      fakeStorage.listOfIds.add(singleItem.first.guid);
 
       expect(fakeStorage.listOfIds.length, 1);
       await newsController.deleteHistory();
@@ -138,7 +141,6 @@ void main() {
     });
   });
 
-  group('NewsController', () {});
 }
 
 class FakeStorage implements MyStorageConcept {
@@ -147,36 +149,27 @@ class FakeStorage implements MyStorageConcept {
   Stream<List<RssItem>> streamList = Stream.value([]);
 
   @override
-  get addItem => (rssItem) {
+  get addItem =>
+          (rssItem) async {
         historyList.add(rssItem);
-        streamList = Stream.value(historyList);
         print('ADDED NEW ITEM: ${historyList.last.title}');
         listOfIds.add(rssItem.guid);
+        streamHistory();
         print('GUID IS: ${rssItem.guid}');
       };
 
   @override
-  get streamHistory => () => streamList;
+  get streamHistory => () => Stream.value(historyList);
 
   @override
   get deleteHistory => () async {
         historyList.clear();
-        streamList = Stream.value(historyList);
-        listOfIds = [];
-        return null;
+        listOfIds.clear();
+        streamHistory();
+        return Future.value();
       };
 
   @override
   get retrieveViewedItemIds => () => Future.value(listOfIds);
 }
 
-//todo sample test below
-//    var expectedFeedValue;
-//    this.addToHistory(myItem);
-//
-//    rssFeedNotifier.addListener(() {
-//      expectedFeedValue = rssFeedNotifier.value;
-//      print ('notification from rssFeed, ${rssFeedNotifier.value}');
-//    });
-//
-//    expect(expectedFeedValue, myItem);

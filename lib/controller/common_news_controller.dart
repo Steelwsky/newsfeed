@@ -95,10 +95,9 @@ class RssDataSourcesList {
   List<RssDataSourceModel> get sources => _sources;
 }
 
-//TODO test all public functions
 class NewsController {
   NewsController({this.getRssFromUrl, this.myDatabase}) {
-    historyIdsNotifier.value = myDatabase.retrieveViewedItemIds(); //todo  test check if counter++
+    historyIdsNotifier.value = myDatabase.retrieveViewedItemIds();
     print('updating history list in newsController');
   }
 
@@ -137,7 +136,6 @@ class NewsController {
           title: feedItem.title,
           description: feedItem.description,
           link: feedItem.link));
-      print(myList[i].guid);
     }
     rssFeedNotifier.value = RssFeed(items: myList);
 
@@ -160,8 +158,12 @@ class NewsController {
     if (await isNewsInHistory(uuid: item.guid) == false) {
       myDatabase.addItem(item);
       historyIdsNotifier.value = myDatabase.retrieveViewedItemIds();
-//      preparedRssFeedNotifier.value = preparedRssFeedNotifier.value.toList().map((f) => f.copyWith(isViewed: true));
-      checkViewedNews(rssFeedNotifier.value);
+      preparedRssFeedNotifier.value = preparedRssFeedNotifier.value.toList().map((f) {
+        if (f.item.guid == item.guid) {
+          return f.copyWith(isViewed: true);
+        }
+        return f;
+      });
     }
   }
 
@@ -172,6 +174,7 @@ class NewsController {
       preparedRssFeedNotifier.value = preparedRssFeedNotifier.value.toList().map((f) => f.copyWith(isViewed: false));
     }
   }
+
 
   Stream<List<RssItem>> getAll() {
     print('getAll called');

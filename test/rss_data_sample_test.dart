@@ -1,7 +1,5 @@
 import 'package:webfeed/webfeed.dart';
 
-class FakeData {
-}
 List<RssItem> fakeRssItems = [
   RssItem(title: 'ItemTitle1', description: 'Description 1', link: 'link1', guid: 'guid1'),
   RssItem(title: 'ItemTitle2', description: 'Description 2', link: 'link2', guid: 'guid2'),
@@ -12,3 +10,5 @@ List<RssItem> fakeRssItems = [
 ];
 
 RssFeed feed = RssFeed(items: fakeRssItems);
+
+

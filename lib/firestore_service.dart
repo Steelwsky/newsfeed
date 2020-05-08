@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 import 'package:webfeed/webfeed.dart';
@@ -47,13 +49,14 @@ class FirestoreDatabase {
     });
   }
 
+
   Stream<List<RssItem>> getHistory() {
     return databaseFirestore.collection('historyItems').snapshots().map((convert) => convert.documents
         .map((item) => RssItem(
-            guid: item.data['id'],
-            title: item.data['title'],
-            description: item.data['description'],
-            link: item.data['link']))
+        guid: item.data['id'],
+        title: item.data['title'],
+        description: item.data['description'],
+        link: item.data['link']))
         .toList());
   }
 }
