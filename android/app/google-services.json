@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "292401436750",
+    "firebase_url": "https://newsfeed-cfc06.firebaseio.com",
+    "project_id": "newsfeed-cfc06",
+    "storage_bucket": "newsfeed-cfc06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292401436750:android:072dae6c99045295d60b1f",
+        "android_client_info": {
+          "package_name": "com.vadimzadorskii.newsfeed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "292401436750-v8c1sqd5u5k1umul3sdpu35dvbbohf9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXZIy_V-sVG_d9bemcMRuov0wiisK7ZmA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "292401436750-v8c1sqd5u5k1umul3sdpu35dvbbohf9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
