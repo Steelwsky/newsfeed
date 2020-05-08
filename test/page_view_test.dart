@@ -12,7 +12,7 @@ void main() {
   Future<void> givenAppIsPumped(WidgetTester tester, FakeStorage fakeStorage) async {
     await tester.pumpWidget(MyApp(
       getRssFromUrl: (String url) => Future.value(feed),
-        myStorage: fakeStorage,
+      myDatabase: fakeStorage,
       ),
     );
   }
@@ -81,10 +81,10 @@ Future whenClickToChangePage(WidgetTester tester, IconData icon) async {
 
 void thenShouldBeInLatestPage() {
   expect(find.byKey(ValueKey('latestNewsPage')), findsOneWidget);
-  expect(find.byKey(ValueKey('emptyHistory')), findsNothing);
+  expect(find.byKey(ValueKey('historyPage')), findsNothing);
 }
 
 void thenShouldBeInHistoryPage() {
-  expect(find.byKey(ValueKey('emptyHistory')), findsOneWidget);
+  expect(find.byKey(ValueKey('historyPage')), findsOneWidget);
   expect(find.byKey(ValueKey('latestNewsPage')), findsNothing);
 }

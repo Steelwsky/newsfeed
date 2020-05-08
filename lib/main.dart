@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:newsfeed/controller/common_news_controller.dart';
-import 'package:newsfeed/my_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
+import 'firestore_service.dart';
 import 'home_page.dart';
-
 
 typedef GetRssFromUrl = Future<RssFeed> Function(String url);
 typedef AddItemToHistory = void Function(RssItem item);
-typedef CheckNewsInHistoryByLink = bool Function(String link);
-typedef GetAllStorageItems = List<RssItem> Function();
-typedef DeleteHistory = List<RssItem> Function();
+typedef GetStreamHistory = Stream<List<RssItem>> Function();
+typedef DeleteHistory = Future<void> Function();
+typedef RetrieveViewedItemIds = Future<List<String>> Function();
 
 class NetworkResponseToRssParser {
   RssFeed mapToRss(http.Response response) {
@@ -23,46 +22,48 @@ class NetworkResponseToRssParser {
 }
 
 abstract class MyStorageConcept {
-  MyStorageConcept({this.addItem, this.isItemInHistory, this.getAll, this.deleteHistory});
+  MyStorageConcept({this.addItem, this.streamHistory, this.deleteHistory, this.retrieveViewedItemIds});
 
   final AddItemToHistory addItem;
-  final CheckNewsInHistoryByLink isItemInHistory;
-  final GetAllStorageItems getAll;
+  final GetStreamHistory streamHistory;
   final DeleteHistory deleteHistory;
+  final RetrieveViewedItemIds retrieveViewedItemIds;
 }
 
-class MyStorage implements MyStorageConcept {
-  MyRepository myRepository = MyRepository();
+class MyDatabase implements MyStorageConcept {
+
+  FirestoreDatabase firestoreDatabase = FirestoreDatabase();
 
   @override
-  AddItemToHistory get addItem => myRepository.addToHistory;
+  AddItemToHistory get addItem => firestoreDatabase.addToHistory;
 
   @override
-  CheckNewsInHistoryByLink get isItemInHistory => myRepository.isViewedItemByLink;
+  GetStreamHistory get streamHistory => firestoreDatabase.getHistory; //rename getAll
 
   @override
-  GetAllStorageItems get getAll => myRepository.getCurrentList;
+  DeleteHistory get deleteHistory => firestoreDatabase.deleteHistory;
 
   @override
-  DeleteHistory get deleteHistory => myRepository.deleteHistory;
+  RetrieveViewedItemIds get retrieveViewedItemIds => firestoreDatabase.retrieveViewedItemIds;
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   final client = http.Client();
   final rssParser = NetworkResponseToRssParser();
-  final MyStorageConcept myStorage = MyStorage();
+  final MyStorageConcept myDatabase = MyDatabase();
 
   runApp(MyApp(
     getRssFromUrl: (url) => client.get(url).then(rssParser.mapToRss),
-    myStorage: myStorage,
+    myDatabase: myDatabase,
   ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({this.getRssFromUrl, this.myStorage});
+  const MyApp({this.getRssFromUrl, this.myDatabase});
 
   final GetRssFromUrl getRssFromUrl;
-  final MyStorageConcept myStorage;
+  final MyStorageConcept myDatabase;
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -77,14 +78,12 @@ class _MyAppState extends State<MyApp> {
         providers: [
           Provider<MyPageController>(create: (_) => MyPageController(pageController: pageController)),
           Provider<NewsController>(
-              create: (_) =>
-                  NewsController(
-                      getRssFromUrl: widget.getRssFromUrl,
-                      myStorage: widget.myStorage)),
+              create: (_) => NewsController(getRssFromUrl: widget.getRssFromUrl, myDatabase: widget.myDatabase)),
         ],
         child: MaterialApp(
-            title: 'News Feed',
-            theme: ThemeData(primarySwatch: Colors.deepPurple),
-            home: MyHomePage(myStorage: widget.myStorage)));
+          title: 'News Feed',
+          theme: ThemeData(primarySwatch: Colors.deepPurple),
+          home: MyHomePage(),
+        ));
   }
 }

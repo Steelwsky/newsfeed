@@ -15,7 +15,7 @@ void main() {
     await tester.pumpWidget(
       MyApp(
         getRssFromUrl: (String url) => Future.value(myList),
-        myStorage: fakeStorage,
+        myDatabase: fakeStorage,
       ),
     );
   }

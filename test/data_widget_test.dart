@@ -14,12 +14,21 @@ void main() {
     await tester.pumpWidget(
       MyApp(
         getRssFromUrl: (String url) => completer.future,
-        myStorage: fakeStorage,
+        myDatabase: fakeStorage,
       ),
     );
   }
 
-  group('fetching data', () {
+  group('data is showed properly in different situations', () {
+    testWidgets('Latest and History pages are empty after app is pumped', (WidgetTester tester) async {
+      FakeStorage fakeStorage = FakeStorage();
+      Completer<RssFeed> completer = Completer();
+      await givenAppIsPumped(tester, fakeStorage, completer);
+      thenShouldBeEmptyLatestPage();
+      await whenSwipeToRightToChangePage(tester);
+      thenShouldBeEmptyHistory();
+    });
+
     testWidgets('Pulling down the screen should return news', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
       Completer<RssFeed> completer = Completer();
@@ -64,7 +73,7 @@ void main() {
       await whenUserPullsToRefresh(tester);
       completer.complete(feed);
       await tester.pumpAndSettle();
-      await whenUserTapsToNews(tester);
+      await whenUserTapsFirstItemInNewsList(tester);
       thenShouldBeInSelectedNews();
     });
 
@@ -76,9 +85,9 @@ void main() {
       await whenUserPullsToRefresh(tester);
       completer.complete(feed);
       await tester.pumpAndSettle();
-      await whenUserTapsToNews(tester);
+      await whenUserTapsFirstItemInNewsList(tester);
       thenShouldBeInSelectedNews();
-      await whenUserTapsToBackButton(tester);
+      await whenUserGoesBack(tester);
       thenShouldFindNews(amount: fakeRssItems.length);
     });
 
@@ -90,41 +99,40 @@ void main() {
       await whenUserPullsToRefresh(tester);
       completer.complete(feed);
       await tester.pumpAndSettle();
-      await whenUserTapsToNews(tester);
+      await whenUserTapsFirstItemInNewsList(tester);
       thenShouldBeInSelectedNews();
-      await whenUserTapsToBackButton(tester);
+      await whenUserGoesBack(tester);
       expect(find.byIcon(Icons.bookmark), findsOneWidget);
     });
 
     testWidgets('viewed news should be in history page', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      fakeStorage.historyList = [];
       Completer<RssFeed> completer = Completer();
       await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
       completer.complete(feed);
       await tester.pumpAndSettle();
-      await whenUserTapsToNews(tester);
-      await whenUserTapsToBackButton(tester);
+      await whenUserTapsFirstItemInNewsList(tester);
+      await whenUserGoesBack(tester);
       await whenSwipeToRightToChangePage(tester);
-      thenShouldNewsIsFoundInHistory();
+      thenShouldSeeNewsInHistory(feed);
       expect(find.text(EMPTY_HISTORY), findsNothing);
     });
 
+    //TODO not working yet. streeeeaaaammmm
     testWidgets('history page: taps to delete icon should delete history', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      fakeStorage.historyList = [];
       Completer<RssFeed> completer = Completer();
       await givenAppIsPumped(tester, fakeStorage, completer);
-      thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
       completer.complete(feed);
       await tester.pumpAndSettle();
-      await whenUserTapsToNews(tester);
-      await whenUserTapsToBackButton(tester);
+      await whenUserTapsFirstItemInNewsList(tester);
+      await whenUserGoesBack(tester);
       await whenSwipeToRightToChangePage(tester);
-      thenShouldNewsIsFoundInHistory();
+      thenShouldBeInHistoryPage(); //todo pointless 130-134
+      thenShouldSeeNewsInHistory(feed);
       expect(find.text(EMPTY_HISTORY), findsNothing);
       await whenUserTapsToDeleteIcon(tester);
       thenShouldBeEmptyHistory();
@@ -132,24 +140,22 @@ void main() {
 
     testWidgets('latest page: taps to delete icon should delete history', (WidgetTester tester) async {
       FakeStorage fakeStorage = FakeStorage();
-      fakeStorage.historyList = [];
       Completer<RssFeed> completer = Completer();
       await givenAppIsPumped(tester, fakeStorage, completer);
       thenShouldBeEmptyLatestPage();
       await whenUserPullsToRefresh(tester);
       completer.complete(feed);
       await tester.pumpAndSettle();
-      await whenUserTapsToNews(tester);
-      await whenUserTapsToBackButton(tester);
+      await whenUserTapsFirstItemInNewsList(tester);
+      await whenUserGoesBack(tester);
       await whenSwipeToRightToChangePage(tester);
-      thenShouldNewsIsFoundInHistory();
+      thenShouldSeeNewsInHistory(feed);
       await whenSwipeToLeftToChangePage(tester);
       thenShouldBeInLatestPage();
       await whenUserTapsToDeleteIcon(tester);
       await whenSwipeToRightToChangePage(tester);
       thenShouldBeEmptyHistory();
     });
-    
   });
 }
 
@@ -173,13 +179,15 @@ void thenShouldBeInSelectedNews() {
   expect(find.byType(BackButtonIcon), findsOneWidget);
 }
 
-void thenShouldNewsIsFoundInHistory() {
+void thenShouldSeeNewsInHistory(RssFeed feed) {
+  //todo rewrite
   expect(find.byType(ListTile), findsOneWidget);
+  expect(find.text(feed.items.first.title), findsOneWidget);
 }
 
 void thenShouldBeEmptyHistory() {
-  expect(find.byType(ListTile), findsNothing);
   expect(find.text(EMPTY_HISTORY), findsOneWidget);
+  expect(find.byType(ListTile), findsNothing);
 }
 
 Future whenUserPullsToRefresh(WidgetTester tester) async {
@@ -187,46 +195,56 @@ Future whenUserPullsToRefresh(WidgetTester tester) async {
   await tester.pump();
 }
 
-Future whenUserTapsToNews(WidgetTester tester) async {
+Future whenUserTapsFirstItemInNewsList(WidgetTester tester) async {
   await tester.tap(find.text(feed.items.first.title));
   await tester.pumpAndSettle();
 }
 
-Future whenUserTapsToBackButton(WidgetTester tester) async {
+Future whenUserGoesBack(WidgetTester tester) async {
   await tester.tap(find.byType(BackButtonIcon));
   await tester.pumpAndSettle();
 }
 
 Future whenUserTapsToDeleteIcon(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.delete));
+  await tester.tap(find.byKey(ValueKey('deleteIcon'))); //todo byKey
   await tester.pumpAndSettle();
 }
 
 class FakeStorage implements MyStorageConcept {
   List<RssItem> historyList = [];
+  List<String> listOfIds = [];
+
+//  Stream<List<RssItem>> streamList = Stream.value([]);
+  StreamController streamController = StreamController();
+
+  //todo StreamController
+
+  void dispose() {
+    streamController.close();
+  }
 
   @override
   get addItem =>
-          (rssItem) {
+          (rssItem) async {
         historyList.add(rssItem);
         print('ADDED NEW ITEM: ${historyList.last.title}');
+        listOfIds.add(rssItem.guid);
+        Future.value(streamHistory());
+        print('GUID IS: ${rssItem.guid}');
       };
 
   @override
-  get isItemInHistory =>
-          (link) {
-        bool myBool = false;
-        for (var i = 0; i < historyList.length; i++) {
-          if (historyList[i].link == link) {
-            return myBool = true;
-          }
-        }
-        return myBool;
+  get streamHistory => () => Stream.value(historyList);
+
+  @override
+  get deleteHistory =>
+          () async {
+        historyList.clear();
+        listOfIds.clear();
+        Future.value(streamHistory());
+        return Future.value();
       };
 
   @override
-  get getAll => () => historyList;
-
-  @override
-  get deleteHistory => () => historyList = [];
+  get retrieveViewedItemIds => () => Future.value(listOfIds);
 }

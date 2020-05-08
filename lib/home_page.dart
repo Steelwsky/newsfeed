@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:newsfeed/main.dart';
 import 'package:provider/provider.dart';
 
 import 'app_bar.dart';
@@ -10,10 +9,6 @@ import 'history_news_page.dart';
 import 'latest_news_page.dart';
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({this.myStorage});
-
-  final MyStorageConcept myStorage;
-
   @override
   Widget build(BuildContext context) {
     final myPageController = Provider.of<MyPageController>(context);

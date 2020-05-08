@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:newsfeed/strings.dart';
+import 'package:uuid/uuid.dart';
 import 'package:webfeed/webfeed.dart';
 
 import '../main.dart';
@@ -94,21 +95,24 @@ class RssDataSourcesList {
   List<RssDataSourceModel> get sources => _sources;
 }
 
+//TODO test all public functions
 class NewsController {
-  NewsController({this.getRssFromUrl, this.myStorage}) {
+  NewsController({this.getRssFromUrl, this.myDatabase}) {
+    historyIdsNotifier.value = myDatabase.retrieveViewedItemIds(); //todo  test check if counter++
     print('updating history list in newsController');
-    updateHistoryList();
   }
 
   final GetRssFromUrl getRssFromUrl;
-  final MyStorageConcept myStorage;
+  final MyStorageConcept myDatabase;
   static RssDataSourcesList rssDataSourcesList = RssDataSourcesList();
 
   ValueNotifier<Iterable<FeedRssItem>> preparedRssFeedNotifier = ValueNotifier([]);
 
-  ValueNotifier<Iterable<RssItem>> historyListNotifier = ValueNotifier([]);
+  ValueNotifier<Future<Iterable<String>>> historyIdsNotifier = ValueNotifier(Future.value([]));
 
   ValueNotifier<RssDataSourceModel> rssDataSourceNotifier = ValueNotifier(rssDataSourcesList.sources.first);
+
+  ValueNotifier<RssFeed> rssFeedNotifier = ValueNotifier(null);
 
   List<RssDataSourceModel> getDataSource() => rssDataSourcesList.sources;
 
@@ -117,39 +121,61 @@ class NewsController {
   }
 
   Future<void> fetchNews() async {
-    await getRssFromUrl(rssDataSourceNotifier.value.link).then((feed) {
-      checkViewedNews(feed);
+    await getRssFromUrl(rssDataSourceNotifier.value.link).then((feed) async {
+      _assignUuidToItems(feed);
     });
   }
 
-  void checkViewedNews(RssFeed feed) {
+  String _getUuidFromString(String title) => Uuid().v5(title, 'UUID');
+
+  void _assignUuidToItems(RssFeed feed) async {
+    List<RssItem> myList = [];
+    for (var i = 0; i < feed.items.length; i++) {
+      final feedItem = feed.items[i];
+      myList.add(RssItem(
+          guid: _getUuidFromString(feedItem.title),
+          title: feedItem.title,
+          description: feedItem.description,
+          link: feedItem.link));
+      print(myList[i].guid);
+    }
+    rssFeedNotifier.value = RssFeed(items: myList);
+
+    await checkViewedNews(rssFeedNotifier.value);
+  }
+
+  Future<void> checkViewedNews(RssFeed feed) async {
     final List<FeedRssItem> preparedFeed = [];
     for (var i = 0; i < feed.items.length; i++) {
-      preparedFeed.add(FeedRssItem(item: feed.items[i], isViewed: isNewsInHistory(feed.items[i])));
+      preparedFeed.add(FeedRssItem(item: feed.items[i], isViewed: await isNewsInHistory(uuid: feed.items[i].guid)));
     }
     preparedRssFeedNotifier.value = preparedFeed;
   }
 
-  bool isNewsInHistory(RssItem item) {
-    return myStorage.isItemInHistory(item.link);
+  Future<bool> isNewsInHistory({@required String uuid}) async {
+    return historyIdsNotifier.value.then((onValue) => onValue.toList().contains(uuid));
   }
 
-  void addToHistory({RssItem item}) {
-    if (isNewsInHistory(item) == false) {
-      myStorage.addItem(item);
-      updateHistoryList();
-      fetchNews(); //bad code here
+  Future<void> addToHistory({RssItem item}) async {
+    if (await isNewsInHistory(uuid: item.guid) == false) {
+      myDatabase.addItem(item);
+      historyIdsNotifier.value = myDatabase.retrieveViewedItemIds();
+//      preparedRssFeedNotifier.value = preparedRssFeedNotifier.value.toList().map((f) => f.copyWith(isViewed: true));
+      checkViewedNews(rssFeedNotifier.value);
     }
   }
 
-  void deleteHistory() {
-    historyListNotifier.value = myStorage.deleteHistory();
-    updateHistoryList();
-    fetchNews();
+  Future<void> deleteHistory() async {
+    await myDatabase.deleteHistory();
+    historyIdsNotifier.value = Future.value([]);
+    if (rssFeedNotifier.value != null) {
+      preparedRssFeedNotifier.value = preparedRssFeedNotifier.value.toList().map((f) => f.copyWith(isViewed: false));
+    }
   }
 
-  void updateHistoryList() {
-    historyListNotifier.value = myStorage.getAll();
+  Stream<List<RssItem>> getAll() {
+    print('getAll called');
+    return myDatabase.streamHistory();
   }
 }
 
@@ -158,4 +184,8 @@ class FeedRssItem {
 
   final RssItem item;
   final bool isViewed;
+
+  FeedRssItem copyWith({bool isViewed}) {
+    return FeedRssItem(isViewed: isViewed, item: item);
+  }
 }

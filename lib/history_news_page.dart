@@ -12,10 +12,12 @@ class HistoryNewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final newsController = Provider.of<NewsController>(context);
-    return ValueListenableBuilder<Iterable<RssItem>>(
-      valueListenable: newsController.historyListNotifier,
-      builder: (_, history, __) {
-        return history.isEmpty ? EmptyHistoryList() : MyHistory(history: history);
+    return StreamBuilder(
+      key: ValueKey('historyPage'),
+      stream: newsController.getAll(),
+      builder: (BuildContext context, AsyncSnapshot<List<RssItem>> snapshot) {
+        if (!snapshot.hasData || snapshot.data.isEmpty) return EmptyHistoryList();
+        return MyHistory(history: snapshot);
       },
     );
   }
@@ -24,15 +26,15 @@ class HistoryNewsPage extends StatelessWidget {
 class MyHistory extends StatelessWidget {
   MyHistory({this.history});
 
-  final Iterable<RssItem> history;
+  final AsyncSnapshot<List<RssItem>> history;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       key: PageStorageKey('historyNewsPage'),
-      itemCount: history.length,
+      itemCount: history.data.length,
       itemBuilder: (_, index) {
-        final historyItem = history.elementAt(index);
+        final historyItem = history.data.elementAt(index);
         return ListTile(
           key: ValueKey('item$index'),
           title: Text(

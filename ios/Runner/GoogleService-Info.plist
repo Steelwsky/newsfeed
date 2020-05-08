@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>292401436750-igtp3hgmko041faipioju48965cs3uoq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.292401436750-igtp3hgmko041faipioju48965cs3uoq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCdjJKFnIi2F_u2eDZMIa8YX8EnElykjcY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>292401436750</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.vadimzadorskii.newsfeed</string>
+	<key>PROJECT_ID</key>
+	<string>newsfeed-cfc06</string>
+	<key>STORAGE_BUCKET</key>
+	<string>newsfeed-cfc06.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:292401436750:ios:e7e02c11f222caf1d60b1f</string>
+	<key>DATABASE_URL</key>
+	<string>https://newsfeed-cfc06.firebaseio.com</string>
+</dict>
+</plist>
