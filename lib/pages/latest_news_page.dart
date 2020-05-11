@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:newsfeed/strings.dart';
+import 'package:newsfeed/constants/strings.dart';
+import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:provider/provider.dart';
 
-import 'controller/common_news_controller.dart';
+import '../controller/common_news_controller.dart';
 import 'selected_news_page.dart';
 
 class LatestNewsPage extends StatelessWidget {

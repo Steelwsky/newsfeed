@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:newsfeed/strings.dart';
+import 'package:newsfeed/constants/strings.dart';
 import 'package:webfeed/webfeed.dart';
 
 class SelectedNewsPage extends StatelessWidget {

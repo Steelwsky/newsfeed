@@ -4,7 +4,8 @@ import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
-import 'firestore_service.dart';
+import 'controller/page_controller.dart';
+import 'firestore_service/firestore_service.dart';
 import 'home_page.dart';
 
 typedef GetRssFromUrl = Future<RssFeed> Function(String url);

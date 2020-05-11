@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/main.dart';
-import 'package:newsfeed/strings.dart';
 import 'package:webfeed/webfeed.dart';
 
 import 'page_view_test.dart';

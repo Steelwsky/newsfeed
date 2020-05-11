@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
+import 'package:newsfeed/models/rss_data_source_model.dart';
 import 'package:webfeed/webfeed.dart';
 
 import 'rss_data_sample_test.dart';

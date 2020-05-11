@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:newsfeed/strings.dart';
+import 'package:newsfeed/constants/strings.dart';
+import 'package:newsfeed/models/rss_data_source_model.dart';
 import 'package:provider/provider.dart';
 
-import 'controller/common_news_controller.dart';
+import '../controller/common_news_controller.dart';
 
 class MyDrawer extends StatelessWidget {
   @override

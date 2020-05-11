@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:newsfeed/models/navbar_item_model.dart';
 import 'package:provider/provider.dart';
 
-import 'controller/common_news_controller.dart';
+import '../controller/page_controller.dart';
 
 class MyBottomNavigationBar extends StatelessWidget {
   final BottomNavBarItems myBottomNavBarItems = BottomNavBarItems();

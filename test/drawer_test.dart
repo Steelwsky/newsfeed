@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:newsfeed/app_bar.dart';
+import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/main.dart';
-import 'package:newsfeed/strings.dart';
+import 'package:newsfeed/widgets/app_bar.dart';
 import 'package:webfeed/webfeed.dart';
 
 import 'data_widget_test.dart';

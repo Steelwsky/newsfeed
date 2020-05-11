@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/controller/common_news_controller.dart';
-import 'package:newsfeed/strings.dart';
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 

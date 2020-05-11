@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:newsfeed/history_news_page.dart';
-import 'package:newsfeed/latest_news_page.dart';
 import 'package:newsfeed/main.dart';
+import 'package:newsfeed/pages/history_news_page.dart';
+import 'package:newsfeed/pages/latest_news_page.dart';
 
 import 'data_widget_test.dart';
 import 'rss_data_sample_test.dart';
