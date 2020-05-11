@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newsfeed/constants/strings.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webfeed/webfeed.dart';
 
 class SelectedNewsPage extends StatelessWidget {
@@ -32,7 +33,11 @@ class SelectedNewsPage extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 16.0),
                             child: InkWell(
                               onTap: () async {
-                                //todo here url_launcher
+                                if (await canLaunch(rssItem.link)) {
+                                  await launch(rssItem.link);
+                                } else {
+                                  throw 'Could not launch ${rssItem.link}';
+                                }
                               },
                               child: Row(
                                 children: <Widget>[
