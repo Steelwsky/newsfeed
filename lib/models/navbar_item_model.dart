@@ -24,7 +24,12 @@ class BottomNavBarItems {
           name: HISTORY,
           icon: Icon(
             Icons.history,
-          ))
+          )),
+      BottomNavBarItemModel(
+          name: SEARCH,
+          icon: Icon(
+            Icons.search,
+          )),
     ];
   }
 

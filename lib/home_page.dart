@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:newsfeed/pages/search_page.dart';
 import 'package:provider/provider.dart';
 
 import 'controller/page_controller.dart';
@@ -21,6 +22,7 @@ class MyHomePage extends StatelessWidget {
         children: <Widget>[
           LatestNewsPage(),
           const HistoryNewsPage(),
+          SearchPage(),
         ],
       ),
       bottomNavigationBar: MyBottomNavigationBar(),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/controller/common_news_controller.dart';
+import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:provider/provider.dart';
-import 'package:webfeed/webfeed.dart';
 
 import 'selected_news_page.dart';
 
@@ -15,7 +15,7 @@ class HistoryNewsPage extends StatelessWidget {
     return StreamBuilder(
       key: ValueKey('historyPage'),
       stream: newsController.getAll(),
-      builder: (BuildContext context, AsyncSnapshot<List<RssItem>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<FeedRssItem>> snapshot) {
         if (!snapshot.hasData || snapshot.data.isEmpty) return EmptyHistoryList();
         return MyHistory(history: snapshot);
       },
@@ -26,7 +26,7 @@ class HistoryNewsPage extends StatelessWidget {
 class MyHistory extends StatelessWidget {
   MyHistory({this.history});
 
-  final AsyncSnapshot<List<RssItem>> history;
+  final AsyncSnapshot<List<FeedRssItem>> history;
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +38,18 @@ class MyHistory extends StatelessWidget {
         return ListTile(
           key: ValueKey('item$index'),
           title: Text(
-            historyItem.title,
+            historyItem.item.title,
             style: TextStyle(fontSize: 18),
           ),
           subtitle: Text(
-            historyItem.description,
+            historyItem.item.description,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 16),
           ),
           trailing: Icon(Icons.bookmark, size: 24, color: Colors.amber),
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: historyItem)));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: historyItem.item)));
           },
         );
       },

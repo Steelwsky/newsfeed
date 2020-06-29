@@ -17,38 +17,55 @@ class LatestNewsPage extends StatelessWidget {
               key: ValueKey('latestNewsPage'),
               onRefresh: myNewsController.fetchNews,
               child: preparedRssFeed.isEmpty
-                  ? EmptyList()
-                  : ListView(
-                  key: PageStorageKey('latest'),
-                  children: preparedRssFeed.toList()
-                      .map(
-                        (i) =>
-                        ListTile(
-                          title: Text(
-                            i.item.title,
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          subtitle: Text(
-                            i.item.description,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          trailing: Icon(i.isViewed ? Icons.bookmark : Icons.bookmark_border,
-                              size: 24, color: Colors.amber),
-                          onTap: () {
-                            myNewsController.addToHistory(item: i.item);
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: i.item)));
-                          },
-                        ),
-                  )
-                      .toList()));
+                  ? EmptyListForLatest()
+                  : LatestListNewsWidget(
+                      myNewsController: myNewsController,
+                      preparedRssFeed: preparedRssFeed,
+                    ));
         });
   }
 }
 
-class EmptyList extends StatelessWidget {
+class LatestListNewsWidget extends StatelessWidget {
+  const LatestListNewsWidget({
+    Key key,
+    @required this.myNewsController,
+    @required this.preparedRssFeed,
+  }) : super(key: key);
+
+  final NewsController myNewsController;
+  final Iterable<FeedRssItem> preparedRssFeed;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+        key: PageStorageKey('latest'),
+        children: preparedRssFeed
+            .toList()
+            .map(
+              (i) => ListTile(
+                title: Text(
+                  i.item.title,
+                  style: TextStyle(fontSize: 18),
+                ),
+                subtitle: Text(
+                  i.item.description,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16),
+                ),
+                trailing: Icon(i.isViewed ? Icons.bookmark : Icons.bookmark_border, size: 24, color: Colors.amber),
+                onTap: () {
+                  myNewsController.addToHistory(item: i.item);
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => SelectedNewsPage(rssItem: i.item)));
+                },
+              ),
+            )
+            .toList());
+  }
+}
+
+class EmptyListForLatest extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(

@@ -26,7 +26,7 @@ class SelectedNewsPage extends StatelessWidget {
                         style: TextStyle(fontSize: 16),
                       ),
                       Container(
-                        height: 50,
+                        height: 70,
                         width: 174,
                         child: Center(
                           child: Padding(
@@ -45,7 +45,7 @@ class SelectedNewsPage extends StatelessWidget {
                                     width: 150,
                                     child: Text(
                                       CONTINUE_READING,
-                                      style: (TextStyle(fontSize: 20)),
+                                      style: (TextStyle(fontSize: 18)),
                                     ),
                                   ),
                                   Icon(Icons.open_in_new, size: 20),

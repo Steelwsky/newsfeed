@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-enum Pages { latest, history }
+//enum Pages { latest, history, search } //seems useless - don't use it anywhere except line 6
+const int INITIAL_PAGE = 0;
 
 class MyPageController {
-  ValueNotifier<int> pageStateNotifier = ValueNotifier(Pages.latest.index);
+  ValueNotifier<int> pageStateNotifier = ValueNotifier(INITIAL_PAGE);
 
   MyPageController({this.pageController});
 

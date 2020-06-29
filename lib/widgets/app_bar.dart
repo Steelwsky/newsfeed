@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/models/rss_data_source_model.dart';
+import 'package:newsfeed/widgets/search_app_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/common_news_controller.dart';
@@ -21,21 +22,23 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     return ValueListenableBuilder(
         valueListenable: myPageController.pageStateNotifier,
         builder: (_, pageState, __) {
-          return AppBar(
-            title: pageState == 0
-                ? AppBarText()
-                : Text(
-              HISTORY,
-              key: ValueKey('HistoryAppBar'),
-            ),
-            actions: <Widget>[
-              IconButton(
-                key: ValueKey('deleteIcon'),
-                icon: Icon(Icons.delete),
-                onPressed: newsController.deleteHistory,
-              ),
-            ],
-          );
+          return pageState != 2 //TODO very bad code here
+              ? AppBar(
+                  title: pageState == 0 //TODO very bad code here
+                      ? AppBarText()
+                      : Text(
+                          HISTORY,
+                          key: ValueKey('HistoryAppBar'),
+                        ),
+                  actions: <Widget>[
+                    IconButton(
+                      key: ValueKey('deleteIcon'),
+                      icon: Icon(Icons.delete),
+                      onPressed: newsController.deleteHistory,
+                    ),
+                  ],
+                )
+              : SearchAppBar();
         });
   }
 }
@@ -54,3 +57,5 @@ class AppBarText extends StatelessWidget {
         });
   }
 }
+
+

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:newsfeed/controller/common_news_controller.dart';
+import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
 
@@ -10,7 +11,7 @@ import 'home_page.dart';
 
 typedef GetRssFromUrl = Future<RssFeed> Function(String url);
 typedef AddItemToHistory = void Function(RssItem item);
-typedef GetStreamHistory = Stream<List<RssItem>> Function();
+typedef GetStreamHistory = Stream<List<FeedRssItem>> Function();
 typedef DeleteHistory = Future<void> Function();
 typedef RetrieveViewedItemIds = Future<List<String>> Function();
 
