@@ -29,13 +29,13 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
       curve: Curves.decelerate,
       parent: _animationController,
     ));
-    _offsetAnimation = Tween<Offset>(
-      end: Offset.zero,
-      begin: const Offset(1.5, 0.0),
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticIn,
-    ));
+//    _offsetAnimation = Tween<Offset>(
+//      end: Offset.zero,
+//      begin: const Offset(1.5, 0.0),
+//    ).animate(CurvedAnimation(
+//      parent: _animationController,
+//      curve: Curves.elasticIn,
+//    ));
   }
 
   @override
