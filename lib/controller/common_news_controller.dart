@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:newsfeed/models/rss_data_source_model.dart';
 import 'package:uuid/uuid.dart';
@@ -107,10 +106,10 @@ class NewsController {
 
   void queryForGoogle({String query}) {
     print('queryForGoogle: $query');
-    queryForSearch.value = '$SEARCH_GOOGLE$query';
+    queryForSearch.value = query;
   }
 
-  Future<void> findItemsBySearch(String query) async {
+  Future<void> findItemsBySearch({String query}) async {
     print('inside findItemsBySearch');
     List<FeedRssItem> list = await unionLatestAndHistory();
     list = list.where((element) => element.item.title.toLowerCase().contains(query.toLowerCase())).toList();
@@ -119,5 +118,10 @@ class NewsController {
     } else
       searchRssItems.value = list;
     print('found: ${searchRssItems.value}');
+  }
+
+  Future<void> queryAndFind({String query}) async {
+    queryForGoogle(query: query);
+    findItemsBySearch(query: query);
   }
 }

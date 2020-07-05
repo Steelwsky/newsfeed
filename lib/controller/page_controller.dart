@@ -14,11 +14,11 @@ class MyPageController {
     pageStateNotifier.value = pageIndex;
   }
 
-  void pageNavBarChange(int pageIndex) {
-    pageController.animateToPage(
+  void pageNavBarChange(int pageIndex) async {
+    await pageController.animateToPage(
       pageIndex,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.ease,
+      duration: Duration(milliseconds: 400),
+      curve: Curves.decelerate,
     );
     pageStateNotifier.value = pageIndex;
   }
