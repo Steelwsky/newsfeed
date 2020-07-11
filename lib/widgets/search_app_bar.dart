@@ -15,7 +15,6 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
   Animation _containerSizeAnimation;
   SearchBloc _searchBloc;
 
-//  Animation<Offset> _offsetAnimation;
   double _initialFieldWidth = 23; // 276.0 = 23 * 12
   double _initialFieldHeight = 44.0;
 
@@ -32,13 +31,6 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
       curve: Curves.decelerate,
       parent: _animationController,
     ));
-//    _offsetAnimation = Tween<Offset>(
-//      end: Offset.zero,
-//      begin: const Offset(1.5, 0.0),
-//    ).animate(CurvedAnimation(
-//      parent: _animationController,
-//      curve: Curves.elasticIn,
-//    ));
   }
 
   @override

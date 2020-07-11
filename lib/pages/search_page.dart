@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsfeed/constants/strings.dart';
-import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:newsfeed/pages/selected_news_page.dart';
 import 'package:newsfeed/search_bloc/search_bloc.dart';
 import 'package:newsfeed/search_bloc/search_state.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class SearchPage extends StatelessWidget {
   @override
@@ -108,14 +105,11 @@ class _ItemsNotFoundState extends State<ItemsNotFound> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final myNewsController = Provider.of<NewsController>(context);
     return SlideTransition(
       position: _offsetAnimation,
-      child: Container(
-        alignment: Alignment.topCenter,
-        child: Padding(
-          padding: const EdgeInsets.all(64),
-          child: Card(
+      child: Column(
+        children: <Widget>[
+          Card(
             child: InkWell(
               splashColor: Colors.deepPurple.withAlpha(30),
               onTap: () async {
@@ -137,7 +131,7 @@ class _ItemsNotFoundState extends State<ItemsNotFound> with TickerProviderStateM
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

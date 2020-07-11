@@ -95,7 +95,6 @@ class NewsController {
   }
 
   Future<List<FeedRssItem>> _unionLatestAndHistory() async {
-//    final List<FeedRssItem> listHistory = await myDatabase.streamHistory().first;
     final List<RssItem> listHistory = await myDatabase.streamHistory().first;
     final List<FeedRssItem> list = listHistory.map((e) => new FeedRssItem(item: e, isViewed: true)).toList();
     final List<FeedRssItem> listLatest = preparedRssFeedNotifier.value.toList();

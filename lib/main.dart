@@ -72,27 +72,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final PageController pageController = PageController();
 
-//  @override
-//  Widget build(BuildContext context) {
-//    return MultiProvider(
-//        providers: [
-//          Provider<MyPageController>(create: (_) => MyPageController(pageController: pageController)),
-//          Provider<NewsController>(
-//              create: (_) => NewsController(getRssFromUrl: widget.getRssFromUrl, myDatabase: widget.myDatabase)),
-//        ],
-//        child: MaterialApp(
-//          title: 'News Feed',
-//          theme: ThemeData(primarySwatch: Colors.deepPurple),
-//          home: BlocProvider(
-//              create: (context) => SearchBloc(
-//                      newsController: NewsController(
-//                    getRssFromUrl: widget.getRssFromUrl,
-//                    myDatabase: widget.myDatabase,
-//                  )),
-//              child: MyHomePage()),
-//        ));
-//  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(

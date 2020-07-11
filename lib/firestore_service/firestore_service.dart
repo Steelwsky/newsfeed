@@ -49,19 +49,6 @@ class FirestoreDatabase {
     });
   }
 
-//  Stream<List<FeedRssItem>> getHistory() {
-//    return databaseFirestore.collection('historyItems').snapshots().map((convert) => convert.documents
-//        .map(
-//          (item) => FeedRssItem(
-//              item: RssItem(
-//                  guid: item.data['id'],
-//                  title: item.data['title'],
-//                  description: item.data['description'],
-//                  link: item.data['link']),
-//              isViewed: true),
-//        )
-//        .toList());
-//  }
 
   Stream<List<RssItem>> getHistory() {
     return databaseFirestore.collection('historyItems').snapshots().map((convert) => convert.documents
