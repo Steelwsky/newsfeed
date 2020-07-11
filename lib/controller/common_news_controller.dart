@@ -96,7 +96,7 @@ class NewsController {
     return myDatabase.streamHistory();
   }
 
-  Future<List<FeedRssItem>> unionLatestAndHistory() async {
+  Future<List<FeedRssItem>> _unionLatestAndHistory() async {
     final List<FeedRssItem> listHistory = await myDatabase.streamHistory().first;
     final List<FeedRssItem> listLatest = preparedRssFeedNotifier.value.toList();
     listLatest.insertAll(listLatest.length, listHistory);
@@ -104,14 +104,14 @@ class NewsController {
     return listLatest;
   }
 
-  void queryForGoogle({String query}) {
+  void _queryForGoogle({String query}) {
     print('queryForGoogle: $query');
     queryForSearch.value = query;
   }
 
-  Future<void> findItemsBySearch({String query}) async {
+  Future<void> _findItemsBySearch({String query}) async {
     print('inside findItemsBySearch');
-    List<FeedRssItem> list = await unionLatestAndHistory();
+    List<FeedRssItem> list = await _unionLatestAndHistory();
     list = list.where((element) => element.item.title.toLowerCase().contains(query.toLowerCase())).toList();
     if (list.isEmpty) {
       searchRssItems.value = null;
@@ -120,8 +120,14 @@ class NewsController {
     print('found: ${searchRssItems.value}');
   }
 
+  Future<List<FeedRssItem>> searchBloc({String query}) async {
+    print('inside findItemsBySearch');
+    List<FeedRssItem> list = await _unionLatestAndHistory();
+    return list.where((element) => element.item.title.toLowerCase().contains(query.toLowerCase())).toList();
+  }
+
   Future<void> queryAndFind({String query}) async {
-    queryForGoogle(query: query);
-    findItemsBySearch(query: query);
+    _queryForGoogle(query: query);
+    _findItemsBySearch(query: query);
   }
 }

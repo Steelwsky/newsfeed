@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:newsfeed/controller/common_news_controller.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:newsfeed/search_bloc/search_bloc.dart';
+import 'package:newsfeed/search_bloc/search_event.dart';
 
 class SearchAppBar extends StatefulWidget {
   @override
@@ -12,14 +13,16 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
   final _textController = TextEditingController();
   AnimationController _animationController;
   Animation _containerSizeAnimation;
-  Animation<Offset> _offsetAnimation;
+  SearchBloc _searchBloc;
+
+//  Animation<Offset> _offsetAnimation;
   double _initialFieldWidth = 23; // 276.0 = 23 * 12
   double _initialFieldHeight = 44.0;
 
   @override
   void initState() {
     super.initState();
-
+    _searchBloc = BlocProvider.of<SearchBloc>(context);
     _animationController = AnimationController(
       duration: Duration(milliseconds: 400),
       vsync: this,
@@ -41,12 +44,14 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
   @override
   void dispose() {
     _animationController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    NewsController newsController = Provider.of<NewsController>(context);
+//    NewsController newsController = Provider.of<NewsController>(context);
+//    SearchBloc searchBloc = BlocProvider.of<SearchBloc>(context);
     return AppBar(
         title: AnimatedBuilder(
             animation: _animationController,
@@ -66,7 +71,11 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
                     controller: _textController,
                     maxLines: 1,
                     autocorrect: false,
-                    onSubmitted: (str) => newsController.queryAndFind(query: str),
+//                    onSubmitted: (str) => newsController.queryAndFind(query: str),
+                    onSubmitted: (str) =>
+                        _searchBloc.add(
+                          SearchInitialized(text: _textController.value.text),
+                        ),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(12),
                       hintText: "Enter a query",
@@ -74,9 +83,14 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
                       suffixIcon: RotationTransition(
                         turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
                         child: IconButton(
-                          icon: Icon(Icons.search),
-                          onPressed: () => newsController.queryAndFind(query: _textController.value.text),
-                        ),
+                            icon: Icon(Icons.search),
+//                          onPressed: () => newsController.queryAndFind(query: _textController.value.text),
+                            onPressed: () {
+                              print(_textController.value.text);
+                              _searchBloc.add(
+                                SearchInitialized(text: _textController.value.text),
+                              );
+                            }),
                       ),
                     ),
                     style: TextStyle(fontSize: 18.0),

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:newsfeed/models/feed_rss_item_model.dart';
 
 abstract class SearchState extends Equatable {
   const SearchState();
@@ -12,10 +13,12 @@ class SearchInitial extends SearchState {}
 class SearchLoading extends SearchState {}
 
 class SearchSuccess extends SearchState {
-  final int count;
+  final List<FeedRssItem> items;
 
-  const SearchSuccess(this.count);
+  const SearchSuccess(this.items);
 
   @override
-  List<Object> get props => [count];
+  List<Object> get props => [items];
 }
+
+class SearchEmptyResult extends SearchState {}
