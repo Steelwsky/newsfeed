@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/controller/common_news_controller.dart';
 import 'package:newsfeed/main.dart';
-import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:newsfeed/models/rss_data_source_model.dart';
 import 'package:webfeed/webfeed.dart';
 
@@ -52,7 +51,7 @@ void main() {
       });
 
       expect(expectedFeedLength, null);
-      await newsController.checkViewedNews(fakeRssItems);
+      await newsController.checkViewedNews(feed);
       expect(expectedFeedLength, feed.items.length);
     });
 
@@ -114,9 +113,9 @@ void main() {
 
     test('deleting leads to empty history list of items', () async {
       FakeStorage fakeStorage = FakeStorage();
-      final singleItem = [FeedRssItem(item: RssItem(title: 'title', guid: '111'))];
+      final singleItem = [RssItem(title: 'title', guid: '111')];
       final newsController = NewsController(
-        getRssFromUrl: (url) => Future.value(RssFeed(items: singleItem)),
+        getRssFromUrl: (url) => Future.value(feed),
         myDatabase: fakeStorage,
       );
 
@@ -142,18 +141,17 @@ void main() {
       expect(fakeStorage.listOfIds.length, 0);
     });
   });
-
 }
 
 class FakeStorage implements MyStorageConcept {
-  List<FeedRssItem> historyList = [];
+  List<RssItem> historyList = [];
   List<String> listOfIds = [];
   Stream<List<RssItem>> streamList = Stream.value([]);
 
   @override
   get addItem => (rssItem) async {
-        historyList.add(FeedRssItem(item: rssItem, isViewed: true));
-        print('ADDED NEW ITEM: ${historyList.last.item.title}');
+        historyList.add(rssItem);
+        print('ADDED NEW ITEM: ${historyList.last.title}');
         listOfIds.add(rssItem.guid);
         streamHistory();
         print('GUID IS: ${rssItem.guid}');
@@ -173,4 +171,3 @@ class FakeStorage implements MyStorageConcept {
   @override
   get retrieveViewedItemIds => () => Future.value(listOfIds);
 }
-

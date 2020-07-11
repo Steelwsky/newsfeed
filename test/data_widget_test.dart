@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/constants/strings.dart';
 import 'package:newsfeed/main.dart';
-import 'package:newsfeed/models/feed_rss_item_model.dart';
 import 'package:webfeed/webfeed.dart';
 
 import 'page_view_test.dart';
@@ -202,13 +201,13 @@ Future whenUserTapsToDeleteIcon(WidgetTester tester) async {
 }
 
 class FakeStorage implements MyStorageConcept {
-  List<FeedRssItem> historyList = [];
+  List<RssItem> historyList = [];
   List<String> listOfIds = [];
 
   @override
   get addItem => (rssItem) async {
-        historyList.add(FeedRssItem(item: rssItem, isViewed: true));
-        print('ADDED NEW ITEM: ${historyList.last.item.title}');
+        historyList.add(rssItem);
+        print('ADDED NEW ITEM: ${historyList.last.title}');
         listOfIds.add(rssItem.guid);
         streamHistory();
         print('GUID IS: ${rssItem.guid}');

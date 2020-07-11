@@ -35,25 +35,3 @@ class MyHomePage extends StatelessWidget {
         ));
   }
 }
-
-
-//class MyHomePage extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    final myPageController = Provider.of<MyPageController>(context);
-//    return Scaffold(
-//      appBar: MyAppBar(),
-//      drawer: MyDrawer(),
-//      body: PageView(
-//        controller: myPageController.pageController,
-//        onPageChanged: (pageIndex) => myPageController.pageSwipeChange(pageIndex),
-//        children: <Widget>[
-//          LatestNewsPage(),
-//          const HistoryNewsPage(),
-//          SearchPage(),
-//        ],
-//      ),
-//      bottomNavigationBar: MyBottomNavigationBar(),
-//    );
-//  }
-//}
