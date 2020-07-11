@@ -10,24 +10,6 @@ import 'package:newsfeed/search_bloc/search_state.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-//class SearchPage extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    final myNewsController = Provider.of<NewsController>(context);
-//    return ValueListenableBuilder<List<FeedRssItem>>(
-//        valueListenable: myNewsController.searchRssItems,
-//        builder: (_, foundItems, __) {
-//          if (foundItems == null) {
-//            return ItemsNotFound();
-//          }
-//          return foundItems.isEmpty
-//              ? InitialEmptySearchList()
-//              : SearchResultsList(
-//                  searchResults: foundItems,
-//                );
-//        });
-//  }
-//}
 
 class SearchPage extends StatelessWidget {
   @override
@@ -35,11 +17,10 @@ class SearchPage extends StatelessWidget {
     return BlocBuilder<SearchBloc, SearchState>(
       bloc: BlocProvider.of<SearchBloc>(context),
       builder: (BuildContext _, SearchState state) {
-//        if (state is SearchInitial) {
-//          return InitialEmptySearchList();
-//        }
         if (state is SearchEmptyResult) {
-          return ItemsNotFound();
+          return ItemsNotFound(
+            query: state.query,
+          );
         }
         if (state is SearchLoading) {
           return CircularProgressIndicator();
@@ -90,6 +71,10 @@ class SearchResultsList extends StatelessWidget {
 }
 
 class ItemsNotFound extends StatefulWidget {
+  ItemsNotFound({this.query});
+
+  final String query;
+
   @override
   _ItemsNotFoundState createState() => _ItemsNotFoundState();
 }
@@ -124,41 +109,37 @@ class _ItemsNotFoundState extends State<ItemsNotFound> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final myNewsController = Provider.of<NewsController>(context);
-    return ValueListenableBuilder<String>(
-        valueListenable: myNewsController.queryForSearch,
-        builder: (_, queryString, __) {
-          return SlideTransition(
-            position: _offsetAnimation,
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(64),
-                child: Card(
-                  child: InkWell(
-                    splashColor: Colors.deepPurple.withAlpha(30),
-                    onTap: () async {
-                      if (await canLaunch('$SEARCH_GOOGLE${myNewsController.queryForSearch.value}')) {
-                        await launch('$SEARCH_GOOGLE${myNewsController.queryForSearch.value}');
-                      } else {
-                        throw 'Could not launch';
-                      }
-                    },
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Not found here\n\nSearch in google: "$queryString"',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ),
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: Container(
+        alignment: Alignment.topCenter,
+        child: Padding(
+          padding: const EdgeInsets.all(64),
+          child: Card(
+            child: InkWell(
+              splashColor: Colors.deepPurple.withAlpha(30),
+              onTap: () async {
+                if (await canLaunch('$SEARCH_GOOGLE${widget.query}')) {
+                  await launch('$SEARCH_GOOGLE${widget.query}');
+                } else {
+                  throw 'Could not launch';
+                }
+              },
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Not found here\n\nSearch in google: "${widget.query}"',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),
             ),
-          );
-        });
+          ),
+        ),
+      ),
+    );
   }
 }
 

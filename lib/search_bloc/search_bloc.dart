@@ -27,7 +27,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       final results = await newsController.searchBloc(query: searchItem);
       print('RESULTS: ${results.length}');
       if (results.isEmpty) {
-        yield SearchEmptyResult();
+        yield SearchEmptyResult(query: searchItem);
       } else
         yield SearchSuccess(results);
     }

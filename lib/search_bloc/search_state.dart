@@ -21,4 +21,11 @@ class SearchSuccess extends SearchState {
   List<Object> get props => [items];
 }
 
-class SearchEmptyResult extends SearchState {}
+class SearchEmptyResult extends SearchState {
+  final String query;
+
+  SearchEmptyResult({this.query});
+
+  @override
+  List<Object> get props => [query];
+}

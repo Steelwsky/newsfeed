@@ -27,8 +27,6 @@ class NewsController {
 
   ValueNotifier<List<FeedRssItem>> searchRssItems = ValueNotifier([]);
 
-  ValueNotifier<String> queryForSearch = ValueNotifier('');
-
   List<RssDataSourceModel> getDataSource() => rssDataSourcesList.sources;
 
   void changingDataSource(DataSource source) {
@@ -104,21 +102,21 @@ class NewsController {
     return listLatest;
   }
 
-  void _queryForGoogle({String query}) {
-    print('queryForGoogle: $query');
-    queryForSearch.value = query;
-  }
+//  void _queryForGoogle({String query}) {
+//    print('queryForGoogle: $query');
+//    queryForSearch.value = query;
+//  }
 
-  Future<void> _findItemsBySearch({String query}) async {
-    print('inside findItemsBySearch');
-    List<FeedRssItem> list = await _unionLatestAndHistory();
-    list = list.where((element) => element.item.title.toLowerCase().contains(query.toLowerCase())).toList();
-    if (list.isEmpty) {
-      searchRssItems.value = null;
-    } else
-      searchRssItems.value = list;
-    print('found: ${searchRssItems.value}');
-  }
+//  Future<void> _findItemsBySearch({String query}) async {
+//    print('inside findItemsBySearch');
+//    List<FeedRssItem> list = await _unionLatestAndHistory();
+//    list = list.where((element) => element.item.title.toLowerCase().contains(query.toLowerCase())).toList();
+//    if (list.isEmpty) {
+//      searchRssItems.value = null;
+//    } else
+//      searchRssItems.value = list;
+//    print('found: ${searchRssItems.value}');
+//  }
 
   Future<List<FeedRssItem>> searchBloc({String query}) async {
     print('inside findItemsBySearch');
@@ -127,7 +125,6 @@ class NewsController {
   }
 
   Future<void> queryAndFind({String query}) async {
-    _queryForGoogle(query: query);
-    _findItemsBySearch(query: query);
+    searchBloc(query: query);
   }
 }

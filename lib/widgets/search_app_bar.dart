@@ -50,8 +50,6 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-//    NewsController newsController = Provider.of<NewsController>(context);
-//    SearchBloc searchBloc = BlocProvider.of<SearchBloc>(context);
     return AppBar(
         title: AnimatedBuilder(
             animation: _animationController,
@@ -59,7 +57,6 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
               return Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-//                transform: Matrix4.translationValues(0.0, 00.0, 0.0),
                   width: _containerSizeAnimation.value * _initialFieldWidth,
                   height: _initialFieldHeight,
                   decoration: BoxDecoration(
@@ -71,7 +68,6 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
                     controller: _textController,
                     maxLines: 1,
                     autocorrect: false,
-//                    onSubmitted: (str) => newsController.queryAndFind(query: str),
                     onSubmitted: (str) =>
                         _searchBloc.add(
                           SearchInitialized(text: _textController.value.text),
@@ -84,7 +80,6 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
                         turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
                         child: IconButton(
                             icon: Icon(Icons.search),
-//                          onPressed: () => newsController.queryAndFind(query: _textController.value.text),
                             onPressed: () {
                               print(_textController.value.text);
                               _searchBloc.add(
