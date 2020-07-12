@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:newsfeed/main.dart';
-import 'package:newsfeed/pages/history_news_page.dart';
-import 'package:newsfeed/pages/latest_news_page.dart';
 
 import 'data_widget_test.dart';
 import 'rss_data_sample_test.dart';
@@ -65,12 +63,12 @@ void main() {
 }
 
 Future whenSwipeToRightToChangePage(WidgetTester tester) async {
-  await tester.fling(find.byType(LatestNewsPage), Offset(-300.0, 0.0), 1000);
+  await tester.fling(find.byType(PageView), Offset(-300.0, 0.0), 1000);
   await tester.pumpAndSettle();
 }
 
 Future whenSwipeToLeftToChangePage(WidgetTester tester) async {
-  await tester.fling(find.byType(HistoryNewsPage), Offset(300.0, 0.0), 1000);
+  await tester.fling(find.byType(PageView), Offset(300.0, 0.0), 1000);
   await tester.pumpAndSettle();
 }
 

@@ -141,6 +141,24 @@ void main() {
       expect(fakeStorage.listOfIds.length, 0);
     });
   });
+
+  group('Search logic', () {
+    test('search should return list of results', () async {
+      FakeStorage fakeStorage = FakeStorage();
+      final testFeed = feed;
+      final newsController = NewsController(
+        getRssFromUrl: (url) => Future.value(testFeed),
+        myDatabase: fakeStorage,
+      );
+      fakeStorage.historyList.addAll(testFeed.items);
+      final _length = fakeStorage.historyList.length;
+      final searchResultsListNoQuery = await newsController.searchBloc(query: '');
+
+      expect(searchResultsListNoQuery.length, _length);
+      final searchResultsList = await newsController.searchBloc(query: testFeed.items.first.title);
+      expect(searchResultsList.length, 1);
+    });
+  });
 }
 
 class FakeStorage implements MyStorageConcept {

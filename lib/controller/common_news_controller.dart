@@ -106,10 +106,8 @@ class NewsController {
   Future<List<FeedRssItem>> searchBloc({String query}) async {
     print('inside findItemsBySearch');
     List<FeedRssItem> list = await _unionLatestAndHistory();
+    print('after union');
+    print(query);
     return list.where((element) => element.item.title.toLowerCase().contains(query.toLowerCase())).toList();
-  }
-
-  Future<void> queryAndFind({String query}) async {
-    searchBloc(query: query);
   }
 }

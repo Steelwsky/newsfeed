@@ -20,7 +20,9 @@ class SearchPage extends StatelessWidget {
           );
         }
         if (state is SearchLoading) {
-          return CircularProgressIndicator();
+          return CircularProgressIndicator(
+            key: ValueKey('indicator'),
+          );
         }
         if (state is SearchSuccess) {
           return SearchResultsList(searchResults: state.items);
@@ -42,7 +44,7 @@ class SearchResultsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-        key: PageStorageKey('latest'),
+        key: PageStorageKey('resultsItems'),
         children: searchResults
             .toList()
             .map(
@@ -110,6 +112,7 @@ class _ItemsNotFoundState extends State<ItemsNotFound> with TickerProviderStateM
       child: Column(
         children: <Widget>[
           Card(
+            key: ValueKey('itemsNotFound'),
             child: InkWell(
               splashColor: Colors.deepPurple.withAlpha(30),
               onTap: () async {
@@ -140,6 +143,8 @@ class _ItemsNotFoundState extends State<ItemsNotFound> with TickerProviderStateM
 class InitialEmptySearchList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      key: PageStorageKey('initialEmptySearchList'),
+    );
   }
 }

@@ -57,13 +57,13 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
                   ),
                   alignment: Alignment.centerLeft,
                   child: TextField(
+                    key: PageStorageKey('searchField'),
                     controller: _textController,
                     maxLines: 1,
                     autocorrect: false,
-                    onSubmitted: (str) =>
-                        _searchBloc.add(
-                          SearchInitialized(text: _textController.value.text),
-                        ),
+                    onSubmitted: (str) => _searchBloc.add(
+                      SearchInitialized(text: _textController.value.text),
+                    ),
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(12),
                       hintText: "Enter a query",
@@ -71,6 +71,7 @@ class _SearchAppBarState extends State<SearchAppBar> with TickerProviderStateMix
                       suffixIcon: RotationTransition(
                         turns: Tween(begin: 0.0, end: 1.0).animate(_animationController),
                         child: IconButton(
+                            key: ValueKey('searchButton'),
                             icon: Icon(Icons.search),
                             onPressed: () {
                               print(_textController.value.text);
